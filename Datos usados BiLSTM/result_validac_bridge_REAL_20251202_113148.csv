@@ -1,0 +1,805 @@
+Board;Jugador;Subasta_Real;Grilla;Force;Min_HCP;Max_HCP;Min_S;Max_S;Min_H;Max_H;Min_D;Max_D;Min_C;Max_C;Subasta_Predicha;Es_Correcta;Confianza;Subasta_Previa
+1;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+1;E;1Tre;110;No;11;21;0;4;0;4;0;4;2;13;1Tre;SI;0.9939;Pass
+1;S;1NT;190;No;15;18;2;5;2;5;2;5;2;5;3NT;NO;0.9109;Pass - 1Tre
+1;W;Pass;0;No;0;7;0;6;0;6;0;6;0;5;X;NO;0.5704;Pass - 1Tre - 1NT
+1;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.993;Pass - 1Tre - 1NT - Pass
+1;E;Pass;0;No;11;21;0;4;0;4;0;4;2;13;1Dia;NO;0.9529;Pass - 1Tre - 1NT - Pass - Pass
+2;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+2;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9976;Pass
+2;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9949;Pass - Pass
+2;N;1Tre;110;No;10;21;0;6;0;6;0;6;2;9;1Dia;NO;0.9501;Pass - Pass - Pass
+2;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;Pass - Pass - Pass - 1Tre
+2;S;1NT;190;No;6;11;2;3;2;3;2;4;2;6;1NT;SI;0.5988;Pass - Pass - Pass - 1Tre - Pass
+2;W;X;191;Si;10;11;3;4;3;4;3;5;0;3;X;SI;0.9939;Pass - Pass - Pass - 1Tre - Pass - 1NT
+2;N;Pass;0;No;10;21;0;6;0;6;0;6;2;9;Pass;SI;0.9008;Pass - Pass - Pass - 1Tre - Pass - 1NT - X
+2;E;2Cor;250;No;0;11;0;4;3;6;0;6;0;6;2Tre;NO;0.9994;Pass - Pass - Pass - 1Tre - Pass - 1NT - X - Pass
+2;S;3Tre;310;No;6;11;2;3;2;3;2;4;4;6;Pass;NO;0.7583;Pass - Pass - Pass - 1Tre - Pass - 1NT - X - Pass - 2Cor
+2;W;Pass;0;Si;10;11;3;4;3;4;3;5;0;3;X;NO;0.3939;Pass - Pass - Pass - 1Tre - Pass - 1NT - X - Pass - 2Cor - 3Tre
+2;N;Pass;0;No;10;21;0;6;0;6;0;6;2;9;Pass;SI;0.6251;Pass - Pass - Pass - 1Tre - Pass - 1NT - X - Pass - 2Cor - 3Tre - Pass
+2;E;Pass;0;No;0;11;0;4;3;6;0;6;0;6;Pass;SI;0.9745;Pass - Pass - Pass - 1Tre - Pass - 1NT - X - Pass - 2Cor - 3Tre - Pass - Pass
+3;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+3;W;1Dia;130;No;11;21;0;4;0;4;4;9;0;9;1Dia;SI;0.9989;Pass
+3;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9172;Pass - 1Dia
+3;E;1Pic;170;Si;6;29;4;9;0;9;0;9;0;9;1Pic;SI;0.9172;Pass - 1Dia - Pass
+3;S;X;171;Si;8;11;0;3;4;5;0;3;4;6;X;SI;0.5445;Pass - 1Dia - Pass - 1Pic
+3;W;2Dia;230;No;11;15;0;4;0;4;5;9;0;9;Pass;NO;0.4622;Pass - 1Dia - Pass - 1Pic - X
+3;N;Pass;0;No;0;10;0;6;0;4;0;6;0;4;2Pic;NO;0.9635;Pass - 1Dia - Pass - 1Pic - X - 2Dia
+3;E;2Cor;250;Si;10;29;4;5;0;4;3;9;0;9;2Cor;SI;0.9933;Pass - 1Dia - Pass - 1Pic - X - 2Dia - Pass
+3;S;Pass;0;Si;8;11;0;3;4;5;0;3;4;6;Pass;SI;0.5963;Pass - 1Dia - Pass - 1Pic - X - 2Dia - Pass - 2Cor
+3;W;3NT;390;No;13;15;0;4;0;4;5;9;0;9;3Cor;NO;0.6677;Pass - 1Dia - Pass - 1Pic - X - 2Dia - Pass - 2Cor - Pass
+3;N;Pass;0;No;0;10;0;6;0;4;0;6;0;4;Pass;SI;0.9836;Pass - 1Dia - Pass - 1Pic - X - 2Dia - Pass - 2Cor - Pass - 3NT
+3;E;Pass;0;Si;10;29;4;5;0;4;3;9;0;9;4Tre;NO;0.9778;Pass - 1Dia - Pass - 1Pic - X - 2Dia - Pass - 2Cor - Pass - 3NT - Pass
+3;S;Pass;0;Si;8;11;0;3;4;5;0;3;4;6;Pass;SI;0.6253;Pass - 1Dia - Pass - 1Pic - X - 2Dia - Pass - 2Cor - Pass - 3NT - Pass - Pass
+4;W;1Dia;130;No;11;21;0;4;0;4;4;9;0;9;1Dia;SI;0.577;
+4;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9493;1Dia
+4;E;1Pic;170;Si;5;29;4;9;0;9;0;9;0;9;3NT;NO;0.9235;1Dia - Pass
+4;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9904;1Dia - Pass - 1Pic
+4;W;2Cor;250;Si;17;21;0;4;4;4;4;9;0;9;3Cor;NO;0.7295;1Dia - Pass - 1Pic - Pass
+4;N;Pass;0;No;11;21;0;4;0;4;4;9;0;9;1Dia;NO;0.5487;1Dia - Pass - 1Pic - Pass - 2Cor
+4;E;2Pic;270;Si;5;29;5;9;0;3;0;9;0;9;3Dia;NO;0.5258;1Dia - Pass - 1Pic - Pass - 2Cor - Pass
+4;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9967;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic
+4;W;3Tre;310;Si;17;21;0;4;4;4;4;9;3;4;3Cor;NO;0.9179;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass
+4;N;Pass;0;No;11;21;0;4;0;4;4;9;0;9;1Dia;NO;0.8491;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre
+4;E;3Dia;330;Si;5;29;5;9;0;3;4;5;0;5;3NT;NO;0.5246;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass
+4;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9997;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3Dia
+4;W;3NT;390;No;17;21;0;4;4;4;4;9;3;4;3Pic;NO;0.5317;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3Dia - Pass
+4;N;Pass;0;No;11;21;0;4;0;4;4;9;0;9;1Dia;NO;0.4645;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3Dia - Pass - 3NT
+4;E;Pass;0;No;5;29;5;9;0;3;4;5;0;5;4Cor;NO;0.7005;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3Dia - Pass - 3NT - Pass
+4;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9991;1Dia - Pass - 1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3Dia - Pass - 3NT - Pass - Pass
+5;N;1Dia;130;No;11;21;0;4;0;4;4;9;0;9;1Dia;SI;0.7324;
+5;E;1Pic;170;No;8;17;5;9;0;6;0;6;0;6;1Pic;SI;0.9994;1Dia
+5;S;Pass;0;No;0;10;0;6;0;6;0;4;0;6;Pass;SI;0.9123;1Dia - 1Pic
+5;W;1NT;190;No;8;11;1;2;2;4;2;5;2;4;2NT;NO;0.5877;1Dia - 1Pic - Pass
+5;N;2Dia;230;No;11;16;0;4;0;4;5;9;0;9;Pass;NO;0.6291;1Dia - 1Pic - Pass - 1NT
+5;E;Pass;0;No;8;14;5;6;0;6;0;6;0;6;Pass;SI;0.6428;1Dia - 1Pic - Pass - 1NT - 2Dia
+5;S;Pass;0;No;0;10;0;6;0;6;0;4;0;6;2Cor;NO;0.4562;1Dia - 1Pic - Pass - 1NT - 2Dia - Pass
+5;W;Pass;0;No;8;11;1;2;2;4;2;5;2;4;X;NO;0.4292;1Dia - 1Pic - Pass - 1NT - 2Dia - Pass - Pass
+6;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+6;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9976;Pass
+6;W;2Cor;250;No;6;10;0;6;6;6;0;6;0;6;1Pic;NO;0.372;Pass - Pass
+6;N;X;251;No;11;37;3;9;0;3;3;9;3;9;2Tre;NO;0.9736;Pass - Pass - 2Cor
+6;E;Pass;0;No;0;11;0;6;0;3;0;6;0;6;Pass;SI;0.9968;Pass - Pass - 2Cor - X
+6;S;2NT;290;No;6;11;0;3;2;6;0;5;0;5;3Tre;NO;0.9084;Pass - Pass - 2Cor - X - Pass
+6;W;Pass;0;No;6;10;0;6;6;6;0;6;0;6;Pass;SI;0.6704;Pass - Pass - 2Cor - X - Pass - 2NT
+6;N;3NT;390;No;13;15;3;4;0;3;3;5;3;5;3NT;SI;0.9245;Pass - Pass - 2Cor - X - Pass - 2NT - Pass
+6;E;Pass;0;No;0;11;0;6;0;3;0;6;0;6;Pass;SI;0.9936;Pass - Pass - 2Cor - X - Pass - 2NT - Pass - 3NT
+6;S;Pass;0;No;6;11;0;3;2;6;0;5;0;5;4Cor;NO;0.8463;Pass - Pass - 2Cor - X - Pass - 2NT - Pass - 3NT - Pass
+6;W;Pass;0;No;6;10;0;6;6;6;0;6;0;6;Pass;SI;0.7268;Pass - Pass - 2Cor - X - Pass - 2NT - Pass - 3NT - Pass - Pass
+7;S;1Pic;170;No;11;21;5;9;0;9;0;9;0;9;1Tre;NO;0.7322;
+7;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9962;1Pic
+7;N;2Pic;270;No;5;9;3;3;0;5;0;6;0;6;2Pic;SI;0.9484;1Pic - Pass
+7;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1Pic - Pass - 2Pic
+7;S;3Cor;350;Si;14;17;5;9;4;5;0;4;0;4;3Cor;SI;0.5618;1Pic - Pass - 2Pic - Pass
+7;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9992;1Pic - Pass - 2Pic - Pass - 3Cor
+7;N;3Pic;370;No;5;7;3;3;0;3;0;6;0;6;3NT;NO;0.9965;1Pic - Pass - 2Pic - Pass - 3Cor - Pass
+7;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9996;1Pic - Pass - 2Pic - Pass - 3Cor - Pass - 3Pic
+7;S;Pass;0;Si;14;17;5;9;4;5;0;4;0;4;4Cor;NO;0.9444;1Pic - Pass - 2Pic - Pass - 3Cor - Pass - 3Pic - Pass
+7;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1Pic - Pass - 2Pic - Pass - 3Cor - Pass - 3Pic - Pass - Pass
+8;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;
+8;N;1Dia;130;No;11;21;0;4;0;4;4;9;0;9;1Dia;SI;0.9994;Pass
+8;E;1Pic;170;No;8;17;5;7;0;4;0;6;0;6;1Pic;SI;0.9898;Pass - 1Dia
+8;S;X;171;Si;7;29;0;5;4;9;0;9;0;9;2Cor;NO;0.896;Pass - 1Dia - 1Pic
+8;W;4Pic;470;No;0;8;4;6;0;4;0;5;0;5;3Pic;NO;0.6028;Pass - 1Dia - 1Pic - X
+8;N;5Cor;550;No;14;18;0;4;4;5;5;9;0;9;3Dia;NO;0.4157;Pass - 1Dia - 1Pic - X - 4Pic
+8;E;Pass;0;No;8;17;5;7;0;4;0;6;0;6;Pass;SI;0.9698;Pass - 1Dia - 1Pic - X - 4Pic - 5Cor
+8;S;Pass;0;No;7;13;0;5;4;9;0;9;0;9;5Dia;NO;0.9957;Pass - 1Dia - 1Pic - X - 4Pic - 5Cor - Pass
+8;W;Pass;0;No;0;8;4;6;0;4;0;5;0;5;X;NO;0.8761;Pass - 1Dia - 1Pic - X - 4Pic - 5Cor - Pass - Pass
+8;N;Pass;0;No;14;18;0;4;4;5;5;9;0;9;5Cor;NO;0.2915;Pass - 1Dia - 1Pic - X - 4Pic - 5Cor - Pass - Pass - Pass
+9;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+9;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass
+9;S;2Tre;210;Si;19;37;0;9;0;9;0;9;0;9;3NT;NO;0.9238;Pass - Pass
+9;W;Pass;0;No;0;18;0;6;0;6;0;6;0;6;X;NO;0.603;Pass - Pass - 2Tre
+9;N;2Dia;230;Si;0;19;0;6;0;6;0;6;0;6;2Dia;SI;0.9956;Pass - Pass - 2Tre - Pass
+9;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;Pass - Pass - 2Tre - Pass - 2Dia
+9;S;2Cor;250;Si;22;37;0;9;2;9;0;9;0;9;2Cor;SI;0.887;Pass - Pass - 2Tre - Pass - 2Dia - Pass
+9;W;Pass;0;No;0;18;0;6;0;6;0;6;0;6;Pass;SI;0.9231;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor
+9;N;2Pic;270;Si;0;19;0;6;0;6;0;6;0;6;2Pic;SI;0.5941;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass
+9;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9983;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 2Pic
+9;S;3Dia;330;Si;22;37;0;9;5;9;0;9;0;9;4Tre;NO;0.3438;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass
+9;W;Pass;0;No;0;18;0;6;0;6;0;6;0;6;Pass;SI;0.9045;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass - 3Dia
+9;N;4Cor;450;No;0;9;0;6;3;5;0;6;0;6;3Pic;NO;0.9921;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass - 3Dia - Pass
+9;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9842;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass - 3Dia - Pass - 4Cor
+9;S;Pass;0;No;22;37;0;9;5;9;0;9;0;9;4Pic;NO;0.2625;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass - 3Dia - Pass - 4Cor - Pass
+9;W;Pass;0;No;0;18;0;6;0;6;0;6;0;6;Pass;SI;0.926;Pass - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass - 3Dia - Pass - 4Cor - Pass - Pass
+10;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+10;S;1Dia;130;No;11;21;0;4;0;4;4;9;0;9;1Dia;SI;0.9967;Pass
+10;W;1Pic;170;No;8;17;5;8;0;4;0;6;0;6;1Pic;SI;0.9998;Pass - 1Dia
+10;N;3Dia;330;No;0;7;0;4;0;3;5;6;0;6;2Pic;NO;0.4277;Pass - 1Dia - 1Pic
+10;E;X;331;Si;10;15;2;2;4;5;0;4;4;6;2Cor;NO;0.9991;Pass - 1Dia - 1Pic - 3Dia
+10;S;Pass;0;No;11;15;0;4;0;4;4;5;0;5;2Pic;NO;0.4028;Pass - 1Dia - 1Pic - 3Dia - X
+10;W;3Pic;370;No;8;12;6;6;0;3;0;6;0;4;2Pic;NO;0.6625;Pass - 1Dia - 1Pic - 3Dia - X - Pass
+10;N;Pass;0;No;0;7;0;4;0;3;5;5;0;6;2Tre;NO;0.3259;Pass - 1Dia - 1Pic - 3Dia - X - Pass - 3Pic
+10;E;Pass;0;No;10;15;2;2;4;5;0;4;4;6;4Cor;NO;0.5351;Pass - 1Dia - 1Pic - 3Dia - X - Pass - 3Pic - Pass
+10;S;Pass;0;No;11;15;0;4;0;4;4;4;0;5;3Tre;NO;0.805;Pass - 1Dia - 1Pic - 3Dia - X - Pass - 3Pic - Pass - Pass
+11;S;1Cor;150;No;11;21;0;4;5;9;0;9;0;9;1Tre;NO;0.6743;
+11;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.99;1Cor
+11;N;2Dia;230;Si;12;29;0;4;0;4;5;9;0;9;2Tre;NO;0.9952;1Cor - Pass
+11;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.998;1Cor - Pass - 2Dia
+11;S;2Cor;250;No;11;14;0;4;5;9;0;9;0;9;2Cor;SI;0.9927;1Cor - Pass - 2Dia - Pass
+11;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9993;1Cor - Pass - 2Dia - Pass - 2Cor
+11;N;2NT;290;Si;12;29;2;3;2;2;5;9;2;9;2Pic;NO;0.9878;1Cor - Pass - 2Dia - Pass - 2Cor - Pass
+11;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9975;1Cor - Pass - 2Dia - Pass - 2Cor - Pass - 2NT
+11;S;3NT;390;No;11;14;0;4;5;9;0;9;0;9;Pass;NO;0.3106;1Cor - Pass - 2Dia - Pass - 2Cor - Pass - 2NT - Pass
+11;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9789;1Cor - Pass - 2Dia - Pass - 2Cor - Pass - 2NT - Pass - 3NT
+11;N;4NT;490;No;17;18;2;3;2;2;5;9;2;9;4Cor;NO;0.6165;1Cor - Pass - 2Dia - Pass - 2Cor - Pass - 2NT - Pass - 3NT - Pass
+11;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9988;1Cor - Pass - 2Dia - Pass - 2Cor - Pass - 2NT - Pass - 3NT - Pass - 4NT
+11;S;Pass;0;No;11;14;0;4;5;9;0;9;0;9;5Pic;NO;0.7471;1Cor - Pass - 2Dia - Pass - 2Cor - Pass - 2NT - Pass - 3NT - Pass - 4NT - Pass
+11;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.6773;1Cor - Pass - 2Dia - Pass - 2Cor - Pass - 2NT - Pass - 3NT - Pass - 4NT - Pass - Pass
+12;W;3Dia;330;No;4;10;0;3;0;3;6;7;0;4;4Tre;NO;0.9461;
+12;N;X;331;Si;12;29;3;9;3;9;0;3;2;5;2Dia;NO;0.2861;3Dia
+12;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9971;3Dia - X
+12;S;4Cor;450;No;8;15;0;5;4;9;0;5;0;9;3Pic;NO;0.5297;3Dia - X - Pass
+12;W;Pass;0;No;4;10;0;3;0;3;6;7;0;4;Pass;SI;0.8057;3Dia - X - Pass - 4Cor
+12;N;Pass;0;Si;12;29;3;9;3;9;0;3;2;5;Pass;SI;0.434;3Dia - X - Pass - 4Cor - Pass
+12;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9999;3Dia - X - Pass - 4Cor - Pass - Pass
+13;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+13;E;1Pic;170;No;11;21;5;9;0;9;0;9;0;9;2Tre;NO;0.3967;Pass
+13;S;2Tre;210;No;10;17;0;5;0;4;0;4;5;9;1Pic;NO;0.4509;Pass - 1Pic
+13;W;3Pic;370;No;0;7;4;4;0;9;0;9;0;9;X;NO;0.9917;Pass - 1Pic - 2Tre
+13;N;5Tre;510;No;12;16;0;4;0;4;0;4;4;6;2Cor;NO;0.7597;Pass - 1Pic - 2Tre - 3Pic
+13;E;5Pic;570;No;12;21;6;9;0;9;0;9;0;2;3Dia;NO;0.8617;Pass - 1Pic - 2Tre - 3Pic - 5Tre
+13;S;6Tre;610;No;10;17;0;5;0;4;0;4;6;9;4Cor;NO;0.8687;Pass - 1Pic - 2Tre - 3Pic - 5Tre - 5Pic
+13;W;6Pic;670;No;0;7;4;4;0;9;0;9;0;9;4Pic;NO;0.9642;Pass - 1Pic - 2Tre - 3Pic - 5Tre - 5Pic - 6Tre
+13;N;X;671;No;0;7;4;4;0;9;0;9;0;9;1Tre;NO;0.4617;Pass - 1Pic - 2Tre - 3Pic - 5Tre - 5Pic - 6Tre - 6Pic
+13;E;Pass;0;No;12;21;6;9;0;9;0;9;0;2;4Pic;NO;0.9529;Pass - 1Pic - 2Tre - 3Pic - 5Tre - 5Pic - 6Tre - 6Pic - X
+13;S;Pass;0;No;10;17;0;5;0;4;0;4;6;9;3Pic;NO;0.9881;Pass - 1Pic - 2Tre - 3Pic - 5Tre - 5Pic - 6Tre - 6Pic - X - Pass
+13;W;Pass;0;No;0;7;4;4;0;9;0;9;0;9;3Cor;NO;0.975;Pass - 1Pic - 2Tre - 3Pic - 5Tre - 5Pic - 6Tre - 6Pic - X - Pass - Pass
+14;E;1Dia;130;No;11;21;0;4;0;4;4;9;0;9;1Dia;SI;0.5965;
+14;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9802;1Dia
+14;W;2Pic;270;No;0;6;6;6;0;4;0;3;0;5;3Pic;NO;0.9224;1Dia - Pass
+14;N;3Tre;310;No;12;17;0;4;0;4;0;4;6;8;Pass;NO;0.5805;1Dia - Pass - 2Pic
+14;E;3Dia;330;No;13;18;0;2;0;4;6;9;0;9;4Cor;NO;0.5651;1Dia - Pass - 2Pic - 3Tre
+14;S;4Tre;410;No;5;10;0;4;0;4;0;4;4;5;Pass;NO;0.9912;1Dia - Pass - 2Pic - 3Tre - 3Dia
+14;W;4Dia;430;No;0;6;6;6;0;4;3;4;0;5;4Pic;NO;0.7375;1Dia - Pass - 2Pic - 3Tre - 3Dia - 4Tre
+14;N;5Tre;510;No;12;17;0;4;0;4;0;4;6;8;Pass;NO;0.5221;1Dia - Pass - 2Pic - 3Tre - 3Dia - 4Tre - 4Dia
+14;E;Pass;0;No;13;18;0;2;0;4;6;9;0;9;4Cor;NO;0.918;1Dia - Pass - 2Pic - 3Tre - 3Dia - 4Tre - 4Dia - 5Tre
+14;S;Pass;0;No;5;10;0;4;0;4;0;4;4;5;4Cor;NO;0.8982;1Dia - Pass - 2Pic - 3Tre - 3Dia - 4Tre - 4Dia - 5Tre - Pass
+14;W;Pass;0;No;0;6;6;6;0;4;3;4;0;5;Pass;SI;0.8629;1Dia - Pass - 2Pic - 3Tre - 3Dia - 4Tre - 4Dia - 5Tre - Pass - Pass
+15;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+15;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9939;Pass
+15;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9982;Pass - Pass
+15;E;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.9766;Pass - Pass - Pass
+15;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9993;Pass - Pass - Pass - 1NT
+15;W;3NT;390;No;8;11;0;4;0;4;0;5;0;5;2Tre;NO;0.7053;Pass - Pass - Pass - 1NT - Pass
+15;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - Pass - Pass - 1NT - Pass - 3NT
+15;E;Pass;0;No;14;17;2;5;2;5;2;5;2;5;Pass;SI;0.9328;Pass - Pass - Pass - 1NT - Pass - 3NT - Pass
+15;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9999;Pass - Pass - Pass - 1NT - Pass - 3NT - Pass - Pass
+16;W;1Pic;170;No;11;21;5;9;0;9;0;9;0;9;1Tre;NO;0.4749;
+16;N;X;171;No;12;29;0;3;3;9;3;5;3;5;X;SI;0.9973;1Pic
+16;E;2Cor;250;Si;7;9;3;3;0;6;0;6;0;6;Pass;NO;0.9942;1Pic - X
+16;S;X;251;No;5;8;0;4;4;7;0;6;0;6;Pass;NO;0.6476;1Pic - X - 2Cor
+16;W;Pass;0;Si;11;21;5;5;0;9;0;9;0;9;3Dia;NO;0.6168;1Pic - X - 2Cor - X
+16;N;3Tre;310;No;16;18;0;3;0;3;0;5;5;9;3NT;NO;0.4707;1Pic - X - 2Cor - X - Pass
+16;E;Pass;0;No;7;9;3;3;0;6;0;6;0;6;Pass;SI;0.997;1Pic - X - 2Cor - X - Pass - 3Tre
+16;S;3Cor;350;No;5;8;0;4;5;7;0;6;0;6;3Cor;SI;0.6088;1Pic - X - 2Cor - X - Pass - 3Tre - Pass
+16;W;3Pic;370;Si;11;21;5;5;0;9;0;9;0;9;4Pic;NO;0.4512;1Pic - X - 2Cor - X - Pass - 3Tre - Pass - 3Cor
+16;N;Pass;0;No;16;18;0;3;0;3;0;5;5;9;3NT;NO;0.4107;1Pic - X - 2Cor - X - Pass - 3Tre - Pass - 3Cor - 3Pic
+16;E;Pass;0;No;7;9;3;3;0;6;0;6;0;6;Pass;SI;0.8007;1Pic - X - 2Cor - X - Pass - 3Tre - Pass - 3Cor - 3Pic - Pass
+16;S;Pass;0;No;5;8;0;4;5;7;0;6;0;6;Pass;SI;0.7734;1Pic - X - 2Cor - X - Pass - 3Tre - Pass - 3Cor - 3Pic - Pass - Pass
+17;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+17;E;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.8037;Pass
+17;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9984;Pass - 1NT
+17;W;2Cor;250;Si;0;25;5;9;0;5;0;9;0;9;1NT;NO;0.9907;Pass - 1NT - Pass
+17;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - 1NT - Pass - 2Cor
+17;E;2Pic;270;No;14;17;2;5;2;5;2;5;2;5;2NT;NO;0.5367;Pass - 1NT - Pass - 2Cor - Pass
+17;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9969;Pass - 1NT - Pass - 2Cor - Pass - 2Pic
+17;W;3Tre;310;Si;9;25;5;9;0;3;0;3;4;9;3Pic;NO;0.5932;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass
+17;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9995;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre
+17;E;3NT;390;No;14;17;2;2;2;5;2;5;2;4;Pass;NO;0.7858;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass
+17;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9997;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3NT
+17;W;Pass;0;Si;9;25;5;9;0;3;0;3;4;9;4Cor;NO;0.6822;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3NT - Pass
+17;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9998;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass - 3Tre - Pass - 3NT - Pass - Pass
+18;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+18;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9976;Pass
+18;W;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.9982;Pass - Pass
+18;N;1Dia;130;No;8;17;0;4;0;4;5;9;0;5;2Tre;NO;0.49;Pass - Pass - 1Tre
+18;E;1NT;190;No;7;10;2;3;2;3;3;5;2;5;1NT;SI;0.9168;Pass - Pass - 1Tre - 1Dia
+18;S;Pass;0;No;0;11;0;6;0;6;0;3;0;6;Pass;SI;0.9977;Pass - Pass - 1Tre - 1Dia - 1NT
+18;W;2Cor;250;Si;15;21;0;3;4;5;0;3;5;7;2Dia;NO;0.7755;Pass - Pass - 1Tre - 1Dia - 1NT - Pass
+18;N;Pass;0;No;8;17;0;4;0;4;5;9;0;5;2Tre;NO;0.9324;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor
+18;E;2NT;290;No;7;10;2;3;2;3;3;5;2;5;3Tre;NO;0.8352;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass
+18;S;Pass;0;No;0;11;0;6;0;6;0;3;0;6;Pass;SI;0.9962;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass - 2NT
+18;W;3Cor;350;No;15;18;0;3;5;5;0;3;6;7;4Dia;NO;0.5875;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass - 2NT - Pass
+18;N;Pass;0;No;8;17;0;4;0;4;5;9;0;5;2Cor;NO;0.5274;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass - 2NT - Pass - 3Cor
+18;E;4Cor;450;No;7;10;2;3;3;3;3;5;2;5;4Cor;SI;0.4738;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass - 2NT - Pass - 3Cor - Pass
+18;S;Pass;0;No;0;11;0;6;0;6;0;3;0;6;Pass;SI;0.9955;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass - 2NT - Pass - 3Cor - Pass - 4Cor
+18;W;Pass;0;No;15;18;0;3;5;5;0;3;6;7;4NT;NO;0.8571;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass - 2NT - Pass - 3Cor - Pass - 4Cor - Pass
+18;N;Pass;0;No;8;17;0;4;0;4;5;9;0;5;Pass;SI;0.5513;Pass - Pass - 1Tre - 1Dia - 1NT - Pass - 2Cor - Pass - 2NT - Pass - 3Cor - Pass - 4Cor - Pass - Pass
+19;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+19;W;1Pic;170;No;11;21;5;9;0;9;0;9;0;9;1Dia;NO;0.7051;Pass
+19;N;2Pic;270;Si;8;18;0;3;4;5;0;6;0;6;Pass;NO;0.4985;Pass - 1Pic
+19;E;3Cor;350;Si;9;15;3;9;0;4;0;5;0;5;2Cor;NO;0.2704;Pass - 1Pic - 2Pic
+19;S;4Tre;410;No;0;10;0;3;0;2;4;6;4;6;Pass;NO;0.8732;Pass - 1Pic - 2Pic - 3Cor
+19;W;4Pic;470;No;11;21;5;9;0;9;0;9;0;9;4Pic;SI;0.7041;Pass - 1Pic - 2Pic - 3Cor - 4Tre
+19;N;5Dia;530;No;12;18;0;3;4;5;5;6;0;4;Pass;NO;0.5365;Pass - 1Pic - 2Pic - 3Cor - 4Tre - 4Pic
+19;E;Pass;0;Si;9;15;3;9;0;4;0;5;0;5;Pass;SI;0.6865;Pass - 1Pic - 2Pic - 3Cor - 4Tre - 4Pic - 5Dia
+19;S;Pass;0;No;0;10;0;3;0;2;4;6;4;6;4NT;NO;0.9672;Pass - 1Pic - 2Pic - 3Cor - 4Tre - 4Pic - 5Dia - Pass
+19;W;Pass;0;No;11;21;5;9;0;9;0;9;0;9;4NT;NO;0.9126;Pass - 1Pic - 2Pic - 3Cor - 4Tre - 4Pic - 5Dia - Pass - Pass
+20;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;
+20;N;1NT;190;No;14;17;0;5;0;5;0;5;0;5;1Tre;NO;0.6272;Pass
+20;E;2Dia;230;Si;10;18;0;7;0;7;0;4;0;4;2NT;NO;0.8085;Pass - 1NT
+20;S;Pass;0;No;0;8;0;4;0;4;0;5;0;5;X;NO;0.9541;Pass - 1NT - 2Dia
+20;W;2Cor;250;No;0;11;0;6;0;6;0;6;0;6;2Cor;SI;0.805;Pass - 1NT - 2Dia - Pass
+20;N;Pass;0;No;14;17;0;5;0;5;0;5;0;5;2Pic;NO;0.5505;Pass - 1NT - 2Dia - Pass - 2Cor
+20;E;2Pic;270;No;10;18;5;7;0;4;0;4;0;4;2Pic;SI;0.4435;Pass - 1NT - 2Dia - Pass - 2Cor - Pass
+20;S;Pass;0;No;0;8;0;4;0;4;0;5;0;5;3Pic;NO;0.8119;Pass - 1NT - 2Dia - Pass - 2Cor - Pass - 2Pic
+20;W;Pass;0;No;0;11;0;3;0;6;0;6;0;6;Pass;SI;0.9855;Pass - 1NT - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass
+20;N;Pass;0;No;14;17;0;5;0;5;0;5;0;5;4Cor;NO;0.4471;Pass - 1NT - 2Dia - Pass - 2Cor - Pass - 2Pic - Pass - Pass
+21;N;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.9998;
+21;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1NT
+21;S;2Pic;270;Si;8;14;2;4;2;4;2;6;2;9;1NT;NO;0.5956;1NT - Pass
+21;W;X;271;No;8;15;5;9;0;4;0;5;0;5;X;SI;0.9648;1NT - Pass - 2Pic
+21;N;Pass;0;No;14;17;2;5;2;5;2;5;2;5;Pass;SI;0.4114;1NT - Pass - 2Pic - X
+21;E;Pass;0;No;0;11;0;3;0;6;0;6;0;6;Pass;SI;0.7368;1NT - Pass - 2Pic - X - Pass
+21;S;5Tre;510;No;10;14;2;4;2;4;2;6;6;9;4Cor;NO;0.5229;1NT - Pass - 2Pic - X - Pass - Pass
+21;W;Pass;0;No;8;15;5;9;0;4;0;5;0;5;X;NO;0.6992;1NT - Pass - 2Pic - X - Pass - Pass - 5Tre
+21;N;Pass;0;No;14;17;2;5;2;5;2;5;2;5;Pass;SI;0.6733;1NT - Pass - 2Pic - X - Pass - Pass - 5Tre - Pass
+21;E;Pass;0;No;0;11;0;3;0;6;0;6;0;6;Pass;SI;0.9999;1NT - Pass - 2Pic - X - Pass - Pass - 5Tre - Pass - Pass
+22;E;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9994;
+22;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9802;1Dia
+22;W;2Tre;210;Si;10;29;0;4;0;4;0;4;5;9;5Tre;NO;0.6914;1Dia - Pass
+22;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1Dia - Pass - 2Tre
+22;E;2Pic;270;Si;11;21;4;4;0;4;4;9;0;3;2Cor;NO;0.8578;1Dia - Pass - 2Tre - Pass
+22;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9992;1Dia - Pass - 2Tre - Pass - 2Pic
+22;W;4Tre;410;Si;14;29;0;4;0;4;0;4;7;9;3Pic;NO;0.4832;1Dia - Pass - 2Tre - Pass - 2Pic - Pass
+22;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9994;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre
+22;E;4Cor;450;Si;11;21;4;4;0;4;4;9;1;3;4Cor;SI;0.969;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass
+22;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9986;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor
+22;W;4NT;490;Si;16;29;0;4;0;4;0;4;7;9;4Pic;NO;0.8044;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass
+22;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9996;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass - 4NT
+22;E;5Cor;550;Si;11;21;4;4;0;4;4;9;1;3;5Cor;SI;0.5934;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass - 4NT - Pass
+22;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9521;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass - 4NT - Pass - 5Cor
+22;W;6Tre;610;No;16;29;0;4;0;4;0;4;7;9;6Cor;NO;0.4993;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass - 4NT - Pass - 5Cor - Pass
+22;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9882;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass - 4NT - Pass - 5Cor - Pass - 6Tre
+22;E;Pass;0;Si;11;21;4;4;0;4;4;9;1;3;6Pic;NO;0.9823;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass - 4NT - Pass - 5Cor - Pass - 6Tre - Pass
+22;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9967;1Dia - Pass - 2Tre - Pass - 2Pic - Pass - 4Tre - Pass - 4Cor - Pass - 4NT - Pass - 5Cor - Pass - 6Tre - Pass - Pass
+23;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+23;W;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.9998;Pass
+23;N;X;111;No;10;29;3;9;3;9;2;9;0;3;2NT;NO;0.582;Pass - 1Tre
+23;E;1Pic;170;Si;5;9;4;9;0;3;0;5;0;5;Pass;NO;0.6785;Pass - 1Tre - X
+23;S;Pass;0;No;0;7;0;4;0;5;0;6;0;6;2Pic;NO;0.7422;Pass - 1Tre - X - 1Pic
+23;W;1NT;190;No;11;14;2;4;2;4;2;3;2;5;1NT;SI;0.9983;Pass - 1Tre - X - 1Pic - Pass
+23;N;Pass;0;No;10;15;3;5;3;5;2;5;0;3;2Tre;NO;0.9188;Pass - 1Tre - X - 1Pic - Pass - 1NT
+23;E;Pass;0;Si;5;9;4;9;0;3;0;5;0;5;3Dia;NO;0.4635;Pass - 1Tre - X - 1Pic - Pass - 1NT - Pass
+23;S;2Cor;250;No;5;7;0;4;4;5;0;6;0;6;X;NO;0.4506;Pass - 1Tre - X - 1Pic - Pass - 1NT - Pass - Pass
+23;W;Pass;0;No;11;14;2;4;2;4;2;3;2;5;X;NO;0.8318;Pass - 1Tre - X - 1Pic - Pass - 1NT - Pass - Pass - 2Cor
+23;N;Pass;0;No;10;15;3;5;3;5;2;5;0;3;3Tre;NO;0.5716;Pass - 1Tre - X - 1Pic - Pass - 1NT - Pass - Pass - 2Cor - Pass
+23;E;Pass;0;Si;5;9;4;9;0;3;0;5;0;5;Pass;SI;0.8813;Pass - 1Tre - X - 1Pic - Pass - 1NT - Pass - Pass - 2Cor - Pass - Pass
+24;W;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.9954;
+24;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9976;1NT
+24;E;2Tre;210;Si;0;25;0;5;0;5;0;6;0;6;2Cor;NO;0.6774;1NT - Pass
+24;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9901;1NT - Pass - 2Tre
+24;W;2Pic;270;No;14;17;4;5;2;3;2;5;2;5;2Dia;NO;0.7481;1NT - Pass - 2Tre - Pass
+24;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9988;1NT - Pass - 2Tre - Pass - 2Pic
+24;E;4Pic;470;No;9;15;4;5;0;4;0;5;0;5;4Pic;SI;0.3499;1NT - Pass - 2Tre - Pass - 2Pic - Pass
+24;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9996;1NT - Pass - 2Tre - Pass - 2Pic - Pass - 4Pic
+24;W;Pass;0;No;14;17;4;5;2;3;2;5;2;5;4NT;NO;0.9936;1NT - Pass - 2Tre - Pass - 2Pic - Pass - 4Pic - Pass
+24;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9999;1NT - Pass - 2Tre - Pass - 2Pic - Pass - 4Pic - Pass - Pass
+25;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+25;E;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.999;Pass
+25;S;X;111;No;10;29;3;9;3;9;2;9;0;3;2NT;NO;0.7401;Pass - 1Tre
+25;W;3Tre;310;No;0;7;0;4;0;4;0;5;5;6;4Pic;NO;0.427;Pass - 1Tre - X
+25;N;Pass;0;No;0;10;0;6;0;6;0;6;0;6;Pass;SI;0.5508;Pass - 1Tre - X - 3Tre
+25;E;Pass;0;No;11;21;0;4;0;4;0;3;2;9;1Dia;NO;0.6355;Pass - 1Tre - X - 3Tre - Pass
+25;S;3NT;390;No;18;25;3;4;3;4;2;5;2;3;3NT;SI;0.8309;Pass - 1Tre - X - 3Tre - Pass - Pass
+25;W;Pass;0;No;0;7;0;4;0;4;0;5;5;6;4Pic;NO;0.5766;Pass - 1Tre - X - 3Tre - Pass - Pass - 3NT
+25;N;Pass;0;No;0;10;0;6;0;6;0;6;0;6;4Cor;NO;0.9678;Pass - 1Tre - X - 3Tre - Pass - Pass - 3NT - Pass
+25;E;Pass;0;No;11;21;0;4;0;4;0;3;2;9;Pass;SI;0.9123;Pass - 1Tre - X - 3Tre - Pass - Pass - 3NT - Pass - Pass
+26;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+26;S;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.9998;Pass
+26;W;X;111;No;12;29;3;5;3;5;3;5;0;3;X;SI;0.9998;Pass - 1Tre
+26;N;1Dia;130;Si;5;12;0;4;0;3;4;9;0;4;3Tre;NO;0.3462;Pass - 1Tre - X
+26;E;Pass;0;No;0;11;0;4;0;4;0;6;0;6;2Tre;NO;0.8674;Pass - 1Tre - X - 1Dia
+26;S;1Cor;150;No;11;14;0;4;4;4;0;3;2;5;1NT;NO;0.5031;Pass - 1Tre - X - 1Dia - Pass
+26;W;Pass;0;No;12;15;3;5;3;5;3;5;0;3;1Pic;NO;0.9383;Pass - 1Tre - X - 1Dia - Pass - 1Cor
+26;N;1NT;190;No;5;10;2;4;1;3;4;5;2;4;2Pic;NO;0.7367;Pass - 1Tre - X - 1Dia - Pass - 1Cor - Pass
+26;E;Pass;0;No;0;11;0;4;0;4;0;6;0;6;2Tre;NO;0.9904;Pass - 1Tre - X - 1Dia - Pass - 1Cor - Pass - 1NT
+26;S;Pass;0;No;11;14;0;4;4;4;0;3;2;5;3Tre;NO;0.6608;Pass - 1Tre - X - 1Dia - Pass - 1Cor - Pass - 1NT - Pass
+26;W;Pass;0;No;12;15;3;5;3;5;3;5;0;3;X;NO;0.9522;Pass - 1Tre - X - 1Dia - Pass - 1Cor - Pass - 1NT - Pass - Pass
+27;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+27;W;1Cor;150;No;11;21;0;4;5;9;0;6;0;6;1Cor;SI;0.9975;Pass
+27;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.7418;Pass - 1Cor
+27;E;2Tre;210;Si;12;29;0;4;0;4;0;4;1;5;2Tre;SI;0.9845;Pass - 1Cor - Pass
+27;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9978;Pass - 1Cor - Pass - 2Tre
+27;W;2Pic;270;Si;15;21;4;5;5;6;0;4;0;4;2Cor;NO;0.8956;Pass - 1Cor - Pass - 2Tre - Pass
+27;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9981;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic
+27;E;3Cor;350;Si;12;29;0;4;3;4;0;4;1;5;Pass;NO;0.365;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass
+27;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9997;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor
+27;W;4Tre;410;Si;15;21;4;5;5;6;0;4;0;4;4Tre;SI;0.9344;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass
+27;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9994;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre
+27;E;4Dia;430;Si;12;29;0;4;3;4;0;4;1;5;4Cor;NO;0.536;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass
+27;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia
+27;W;4NT;490;Si;15;21;4;5;5;6;0;4;0;4;4Cor;NO;0.5744;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass
+27;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9974;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass - 4NT
+27;E;5Pic;570;Si;12;29;0;4;3;4;0;4;1;5;5Pic;SI;0.9347;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass - 4NT - Pass
+27;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.87;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass - 4NT - Pass - 5Pic
+27;W;6Cor;650;No;15;21;4;5;5;6;0;4;0;4;6Tre;NO;0.9268;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass - 4NT - Pass - 5Pic - Pass
+27;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9215;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass - 4NT - Pass - 5Pic - Pass - 6Cor
+27;E;Pass;0;Si;12;29;0;4;3;4;0;4;1;5;6Tre;NO;0.9755;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass - 4NT - Pass - 5Pic - Pass - 6Cor - Pass
+27;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9957;Pass - 1Cor - Pass - 2Tre - Pass - 2Pic - Pass - 3Cor - Pass - 4Tre - Pass - 4Dia - Pass - 4NT - Pass - 5Pic - Pass - 6Cor - Pass - Pass
+28;W;1Pic;170;No;11;21;5;9;0;6;0;6;0;6;1Pic;SI;0.9999;
+28;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1Pic
+28;E;3NT;390;No;12;15;3;3;2;4;2;4;2;4;1Pic;NO;0.8745;1Pic - Pass
+28;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9996;1Pic - Pass - 3NT
+28;W;4Pic;470;No;11;21;5;9;0;6;0;6;0;6;4Cor;NO;0.5211;1Pic - Pass - 3NT - Pass
+28;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9997;1Pic - Pass - 3NT - Pass - 4Pic
+28;E;Pass;0;No;12;15;3;3;2;4;2;4;2;4;Pass;SI;0.9369;1Pic - Pass - 3NT - Pass - 4Pic - Pass
+28;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9988;1Pic - Pass - 3NT - Pass - 4Pic - Pass - Pass
+29;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+29;E;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.999;Pass
+29;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9977;Pass - 1Tre
+29;W;1Pic;170;No;5;29;4;9;0;6;0;6;0;6;1Pic;SI;0.9984;Pass - 1Tre - Pass
+29;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9984;Pass - 1Tre - Pass - 1Pic
+29;E;2Tre;210;No;11;16;0;3;0;4;0;3;5;9;1Pic;NO;0.7186;Pass - 1Tre - Pass - 1Pic - Pass
+29;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9895;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre
+29;W;2Dia;230;Si;12;29;4;9;0;6;0;6;0;6;2Dia;SI;0.9904;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass
+29;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9967;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass - 2Dia
+29;E;2Cor;250;Si;11;16;0;2;4;4;0;3;5;9;3Tre;NO;0.9354;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass - 2Dia - Pass
+29;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9994;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor
+29;W;3NT;390;No;12;15;4;5;2;3;2;3;2;4;2Pic;NO;0.7888;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass
+29;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9991;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 3NT
+29;E;Pass;0;Si;11;16;0;2;4;4;0;3;5;9;4Cor;NO;0.9999;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 3NT - Pass
+29;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - 1Tre - Pass - 1Pic - Pass - 2Tre - Pass - 2Dia - Pass - 2Cor - Pass - 3NT - Pass - Pass
+30;E;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.9282;
+30;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9971;1NT
+30;W;2Pic;270;Si;8;15;0;4;0;4;0;6;0;6;1Pic;NO;0.4453;1NT - Pass
+30;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9972;1NT - Pass - 2Pic
+30;E;2NT;290;No;14;15;2;5;2;5;2;5;2;5;3NT;NO;0.9616;1NT - Pass - 2Pic - Pass
+30;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9993;1NT - Pass - 2Pic - Pass - 2NT
+30;W;3Cor;350;Si;9;15;2;4;0;1;0;6;0;6;4Cor;NO;0.8917;1NT - Pass - 2Pic - Pass - 2NT - Pass
+30;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9786;1NT - Pass - 2Pic - Pass - 2NT - Pass - 3Cor
+30;E;3NT;390;No;14;15;2;5;2;5;2;5;2;5;3NT;SI;0.9997;1NT - Pass - 2Pic - Pass - 2NT - Pass - 3Cor - Pass
+30;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.998;1NT - Pass - 2Pic - Pass - 2NT - Pass - 3Cor - Pass - 3NT
+30;W;Pass;0;No;9;15;2;4;0;1;0;6;0;6;4Cor;NO;0.9987;1NT - Pass - 2Pic - Pass - 2NT - Pass - 3Cor - Pass - 3NT - Pass
+30;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9961;1NT - Pass - 2Pic - Pass - 2NT - Pass - 3Cor - Pass - 3NT - Pass - Pass
+31;S;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9975;
+31;W;2Pic;270;No;4;8;5;6;0;3;0;4;0;4;3Pic;NO;0.9888;1Dia
+31;N;3NT;390;No;12;15;2;4;2;4;1;4;2;5;X;NO;0.5535;1Dia - 2Pic
+31;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9987;1Dia - 2Pic - 3NT
+31;S;Pass;0;No;11;14;0;4;0;4;4;5;0;6;4Cor;NO;0.4645;1Dia - 2Pic - 3NT - Pass
+31;W;Pass;0;No;4;8;5;6;0;3;0;4;0;4;Pass;SI;0.9427;1Dia - 2Pic - 3NT - Pass - Pass
+32;W;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9998;
+32;N;1Cor;150;No;8;16;0;4;5;7;0;4;0;4;2Tre;NO;0.9821;1Dia
+32;E;2Dia;230;No;5;9;0;3;0;4;4;5;0;5;Pass;NO;0.3837;1Dia - 1Cor
+32;S;Pass;0;No;0;10;0;5;0;3;0;5;0;5;X;NO;0.5763;1Dia - 1Cor - 2Dia
+32;W;Pass;0;No;11;14;0;4;0;4;4;5;0;6;2Cor;NO;0.8885;1Dia - 1Cor - 2Dia - Pass
+32;N;Pass;0;No;8;16;0;4;5;7;0;4;0;4;2Tre;NO;0.5489;1Dia - 1Cor - 2Dia - Pass - Pass
+33;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+33;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass
+33;S;2Tre;210;Si;19;29;0;9;0;9;0;9;0;9;2Tre;SI;0.9998;Pass - Pass
+33;W;Pass;0;No;0;18;0;6;0;6;0;6;0;6;X;NO;0.603;Pass - Pass - 2Tre
+33;N;2Pic;270;Si;6;11;5;9;0;4;0;4;0;4;3Tre;NO;0.6387;Pass - Pass - 2Tre - Pass
+33;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9994;Pass - Pass - 2Tre - Pass - 2Pic
+33;S;3Tre;310;Si;19;29;0;2;0;4;0;4;5;9;4Tre;NO;0.6423;Pass - Pass - 2Tre - Pass - 2Pic - Pass
+33;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9976;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre
+33;N;4Tre;410;Si;6;11;5;6;0;4;0;4;3;4;3Tre;NO;0.9423;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass
+33;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9998;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre
+33;S;4Dia;430;Si;19;29;0;2;0;4;0;4;5;9;4Cor;NO;0.5054;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass
+33;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9993;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia
+33;N;4Pic;470;Si;6;11;5;6;0;4;0;4;3;4;4Cor;NO;0.9821;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass
+33;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9994;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic
+33;S;4NT;490;Si;19;29;0;2;0;4;0;4;5;9;5Pic;NO;0.4789;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass
+33;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9974;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT
+33;N;5Tre;510;Si;6;11;5;6;0;4;0;4;3;4;5Tre;SI;0.7848;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass
+33;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.8969;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre
+33;S;5NT;590;Si;19;29;0;2;0;4;0;4;5;9;6Tre;NO;0.9918;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass
+33;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.8923;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass - 5NT
+33;N;6Pic;670;Si;6;11;5;6;0;4;0;4;3;4;5Pic;NO;0.4036;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass - 5NT - Pass
+33;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9839;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass - 5NT - Pass - 6Pic
+33;S;7Tre;710;No;19;29;0;2;0;4;0;4;5;9;6Tre;NO;0.6865;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass - 5NT - Pass - 6Pic - Pass
+33;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9943;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass - 5NT - Pass - 6Pic - Pass - 7Tre
+33;N;Pass;0;Si;6;11;5;6;0;4;0;4;3;4;3Tre;NO;0.6878;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass - 5NT - Pass - 6Pic - Pass - 7Tre - Pass
+33;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9998;Pass - Pass - 2Tre - Pass - 2Pic - Pass - 3Tre - Pass - 4Tre - Pass - 4Dia - Pass - 4Pic - Pass - 4NT - Pass - 5Tre - Pass - 5NT - Pass - 6Pic - Pass - 7Tre - Pass - Pass
+34;E;1Pic;170;No;11;21;5;9;0;6;0;6;0;6;1Pic;SI;0.9997;
+34;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.995;1Pic
+34;W;2NT;290;Si;12;29;4;4;0;5;0;5;0;5;3Cor;NO;0.7643;1Pic - Pass
+34;N;3Dia;330;No;10;15;0;3;0;4;5;7;0;5;X;NO;0.4316;1Pic - Pass - 2NT
+34;E;4Pic;470;No;11;13;5;6;0;6;0;6;0;6;4Cor;NO;0.9836;1Pic - Pass - 2NT - 3Dia
+34;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9483;1Pic - Pass - 2NT - 3Dia - 4Pic
+34;W;Pass;0;Si;12;16;4;4;0;5;0;5;0;5;6Cor;NO;0.8993;1Pic - Pass - 2NT - 3Dia - 4Pic - Pass
+34;N;Pass;0;No;10;15;0;3;0;4;5;7;0;5;4NT;NO;0.554;1Pic - Pass - 2NT - 3Dia - 4Pic - Pass - Pass
+35;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+35;W;1Cor;150;No;11;21;0;4;5;9;0;6;0;6;1Cor;SI;0.9975;Pass
+35;N;2Dia;230;No;10;17;0;4;0;4;5;9;0;4;1Pic;NO;0.8161;Pass - 1Cor
+35;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9936;Pass - 1Cor - 2Dia
+35;S;2Pic;270;No;7;11;5;7;0;4;0;4;0;5;2Pic;SI;0.9263;Pass - 1Cor - 2Dia - Pass
+35;W;Pass;0;No;11;21;0;4;5;9;0;6;0;6;X;NO;0.7208;Pass - 1Cor - 2Dia - Pass - 2Pic
+35;N;Pass;0;No;10;17;1;3;0;4;5;9;0;4;4Cor;NO;0.5076;Pass - 1Cor - 2Dia - Pass - 2Pic - Pass
+35;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9994;Pass - 1Cor - 2Dia - Pass - 2Pic - Pass - Pass
+36;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;
+36;N;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9999;Pass
+36;E;2Tre;210;No;10;17;0;4;0;4;0;4;5;9;5Tre;NO;0.6537;Pass - 1Dia
+36;S;X;211;No;6;29;0;4;4;7;0;6;0;3;X;SI;0.9936;Pass - 1Dia - 2Tre
+36;W;2Cor;250;Si;6;9;0;4;0;4;0;4;4;5;2Dia;NO;0.4801;Pass - 1Dia - 2Tre - X
+36;N;Pass;0;No;11;14;0;4;0;4;4;9;0;6;2Cor;NO;0.9855;Pass - 1Dia - 2Tre - X - 2Cor
+36;E;3Tre;310;No;10;15;0;4;0;4;0;4;5;9;2Cor;NO;0.9935;Pass - 1Dia - 2Tre - X - 2Cor - Pass
+36;S;Pass;0;No;6;29;0;4;4;7;0;6;0;3;1Cor;NO;0.8134;Pass - 1Dia - 2Tre - X - 2Cor - Pass - 3Tre
+36;W;Pass;0;No;6;9;0;4;0;4;0;4;4;5;3Tre;NO;0.6895;Pass - 1Dia - 2Tre - X - 2Cor - Pass - 3Tre - Pass
+36;N;3Dia;330;No;11;14;0;4;0;4;5;6;0;6;2Cor;NO;0.8367;Pass - 1Dia - 2Tre - X - 2Cor - Pass - 3Tre - Pass - Pass
+36;E;Pass;0;No;10;15;0;4;0;4;0;4;5;9;2Cor;NO;0.9749;Pass - 1Dia - 2Tre - X - 2Cor - Pass - 3Tre - Pass - Pass - 3Dia
+36;S;Pass;0;No;6;29;0;4;4;7;0;6;0;3;1Cor;NO;0.7508;Pass - 1Dia - 2Tre - X - 2Cor - Pass - 3Tre - Pass - Pass - 3Dia - Pass
+36;W;Pass;0;No;6;9;0;4;0;4;0;4;4;5;Pass;SI;0.7155;Pass - 1Dia - 2Tre - X - 2Cor - Pass - 3Tre - Pass - Pass - 3Dia - Pass - Pass
+37;N;1Cor;150;No;11;21;0;4;5;9;0;6;0;6;1Cor;SI;0.9995;
+37;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.995;1Cor
+37;S;1Pic;170;Si;5;29;4;9;0;3;0;6;0;6;1Pic;SI;0.9959;1Cor - Pass
+37;W;X;171;Si;10;25;0;4;0;4;4;6;4;6;3Cor;NO;0.9168;1Cor - Pass - 1Pic
+37;N;XX;172;Si;11;21;3;3;5;9;0;6;0;6;Pass;NO;0.5486;1Cor - Pass - 1Pic - X
+37;E;2Dia;230;No;0;9;0;4;0;4;3;5;0;3;2Cor;NO;0.7362;1Cor - Pass - 1Pic - X - XX
+37;S;3Pic;370;No;10;11;5;6;0;3;0;4;0;4;Pass;NO;0.3452;1Cor - Pass - 1Pic - X - XX - 2Dia
+37;W;4Dia;430;No;12;15;0;4;0;4;5;6;4;6;Pass;NO;0.7611;1Cor - Pass - 1Pic - X - XX - 2Dia - 3Pic
+37;N;Pass;0;No;11;14;3;3;5;9;0;6;0;6;4Cor;NO;0.5206;1Cor - Pass - 1Pic - X - XX - 2Dia - 3Pic - 4Dia
+37;E;Pass;0;No;0;9;0;4;0;4;3;5;0;3;4Tre;NO;0.996;1Cor - Pass - 1Pic - X - XX - 2Dia - 3Pic - 4Dia - Pass
+37;S;Pass;0;No;10;11;5;6;0;3;0;4;0;4;Pass;SI;0.8259;1Cor - Pass - 1Pic - X - XX - 2Dia - 3Pic - 4Dia - Pass - Pass
+38;E;1Tre;110;No;11;21;0;4;0;4;0;5;2;9;1Tre;SI;0.9989;
+38;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9965;1Tre
+38;W;2Tre;210;Si;10;29;0;4;0;4;0;4;4;7;5Tre;NO;0.4838;1Tre - Pass
+38;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9988;1Tre - Pass - 2Tre
+38;E;2Cor;250;Si;11;21;0;4;4;4;0;5;2;9;3Tre;NO;0.9877;1Tre - Pass - 2Tre - Pass
+38;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9994;1Tre - Pass - 2Tre - Pass - 2Cor
+38;W;3Dia;330;Si;12;29;0;3;0;3;4;4;4;7;2Pic;NO;0.8638;1Tre - Pass - 2Tre - Pass - 2Cor - Pass
+38;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9972;1Tre - Pass - 2Tre - Pass - 2Cor - Pass - 3Dia
+38;E;3NT;390;No;11;14;2;4;4;4;2;4;2;5;3Pic;NO;0.873;1Tre - Pass - 2Tre - Pass - 2Cor - Pass - 3Dia - Pass
+38;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9976;1Tre - Pass - 2Tre - Pass - 2Cor - Pass - 3Dia - Pass - 3NT
+38;W;Pass;0;Si;12;16;0;3;0;3;4;4;4;7;4Dia;NO;0.8226;1Tre - Pass - 2Tre - Pass - 2Cor - Pass - 3Dia - Pass - 3NT - Pass
+38;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9984;1Tre - Pass - 2Tre - Pass - 2Cor - Pass - 3Dia - Pass - 3NT - Pass - Pass
+39;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+39;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9939;Pass
+39;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9982;Pass - Pass
+39;E;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9999;Pass - Pass - Pass
+39;S;1Pic;170;No;8;11;5;5;0;4;0;4;0;5;4Pic;NO;0.2202;Pass - Pass - Pass - 1Dia
+39;W;X;171;No;6;11;0;4;4;5;0;4;0;5;2Cor;NO;0.7635;Pass - Pass - Pass - 1Dia - 1Pic
+39;N;Pass;0;No;0;11;0;3;0;6;0;6;0;6;Pass;SI;0.999;Pass - Pass - Pass - 1Dia - 1Pic - X
+39;E;3Cor;350;No;16;18;0;4;4;4;4;9;0;6;1Cor;NO;0.9089;Pass - Pass - Pass - 1Dia - 1Pic - X - Pass
+39;S;Pass;0;No;8;11;5;5;0;4;0;4;0;5;Pass;SI;0.7499;Pass - Pass - Pass - 1Dia - 1Pic - X - Pass - 3Cor
+39;W;4Cor;450;No;8;11;0;4;4;5;0;4;0;5;4Pic;NO;0.4331;Pass - Pass - Pass - 1Dia - 1Pic - X - Pass - 3Cor - Pass
+39;N;Pass;0;No;0;11;0;3;0;6;0;6;0;6;Pass;SI;0.9994;Pass - Pass - Pass - 1Dia - 1Pic - X - Pass - 3Cor - Pass - 4Cor
+39;E;Pass;0;No;16;18;0;4;4;4;4;9;0;6;4NT;NO;0.7668;Pass - Pass - Pass - 1Dia - 1Pic - X - Pass - 3Cor - Pass - 4Cor - Pass
+39;S;Pass;0;No;8;11;5;5;0;4;0;4;0;5;Pass;SI;0.985;Pass - Pass - Pass - 1Dia - 1Pic - X - Pass - 3Cor - Pass - 4Cor - Pass - Pass
+40;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;
+40;N;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9999;Pass
+40;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9945;Pass - 1Dia
+40;S;1Cor;150;Si;5;29;0;4;4;9;0;6;0;6;1Cor;SI;0.9981;Pass - 1Dia - Pass
+40;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9468;Pass - 1Dia - Pass - 1Cor
+40;N;1NT;190;No;11;14;2;4;1;4;4;5;2;6;1NT;SI;0.9917;Pass - 1Dia - Pass - 1Cor - Pass
+40;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9981;Pass - 1Dia - Pass - 1Cor - Pass - 1NT
+40;S;3NT;390;No;12;17;2;4;4;4;2;5;2;5;3NT;SI;0.9997;Pass - 1Dia - Pass - 1Cor - Pass - 1NT - Pass
+40;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass - 1Dia - Pass - 1Cor - Pass - 1NT - Pass - 3NT
+40;N;Pass;0;No;11;14;2;4;1;4;4;5;2;6;Pass;SI;0.621;Pass - 1Dia - Pass - 1Cor - Pass - 1NT - Pass - 3NT - Pass
+40;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9999;Pass - 1Dia - Pass - 1Cor - Pass - 1NT - Pass - 3NT - Pass - Pass
+41;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+41;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass
+41;S;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9992;Pass - Pass
+41;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9651;Pass - Pass - 1Dia
+41;N;1NT;190;No;5;9;2;3;2;3;2;5;2;5;2Cor;NO;0.9582;Pass - Pass - 1Dia - Pass
+41;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9977;Pass - Pass - 1Dia - Pass - 1NT
+41;S;2NT;290;No;17;19;2;4;2;4;4;5;2;4;3NT;NO;0.4516;Pass - Pass - 1Dia - Pass - 1NT - Pass
+41;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9949;Pass - Pass - 1Dia - Pass - 1NT - Pass - 2NT
+41;N;Pass;0;No;5;6;2;3;2;3;2;5;2;5;3Dia;NO;0.8057;Pass - Pass - 1Dia - Pass - 1NT - Pass - 2NT - Pass
+41;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9878;Pass - Pass - 1Dia - Pass - 1NT - Pass - 2NT - Pass - Pass
+42;E;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.999;
+42;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9965;1Tre
+42;W;Pass;0;No;0;5;0;5;0;5;0;5;0;4;3Pic;NO;0.4502;1Tre - Pass
+42;N;1Dia;130;No;8;15;0;4;0;4;5;9;0;5;3Tre;NO;0.9178;1Tre - Pass - Pass
+42;E;Pass;0;No;11;21;0;4;0;4;0;3;2;9;1Dia;NO;0.9264;1Tre - Pass - Pass - 1Dia
+42;S;2Tre;210;Si;10;14;0;4;0;4;3;5;0;5;2Cor;NO;0.5225;1Tre - Pass - Pass - 1Dia - Pass
+42;W;Pass;0;No;0;5;0;5;0;5;0;5;0;4;X;NO;0.9466;1Tre - Pass - Pass - 1Dia - Pass - 2Tre
+42;N;3NT;390;No;14;15;2;4;2;4;5;9;2;5;2Dia;NO;0.5238;1Tre - Pass - Pass - 1Dia - Pass - 2Tre - Pass
+42;E;Pass;0;No;11;21;0;4;0;4;0;3;2;9;1Dia;NO;0.6916;1Tre - Pass - Pass - 1Dia - Pass - 2Tre - Pass - 3NT
+42;S;Pass;0;No;10;14;0;4;0;4;3;5;0;5;4Cor;NO;0.9765;1Tre - Pass - Pass - 1Dia - Pass - 2Tre - Pass - 3NT - Pass
+42;W;Pass;0;No;0;5;0;5;0;5;0;5;0;4;Pass;SI;0.7449;1Tre - Pass - Pass - 1Dia - Pass - 2Tre - Pass - 3NT - Pass - Pass
+43;S;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.9997;
+43;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9968;1Tre
+43;N;1Pic;170;Si;5;29;4;9;0;5;0;5;0;5;1Pic;SI;0.8946;1Tre - Pass
+43;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9964;1Tre - Pass - 1Pic
+43;S;2Tre;210;No;11;21;0;3;0;4;0;3;5;9;2Pic;NO;0.5818;1Tre - Pass - 1Pic - Pass
+43;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.994;1Tre - Pass - 1Pic - Pass - 2Tre
+43;N;Pass;0;No;5;29;4;9;0;5;0;5;0;5;2Dia;NO;0.5683;1Tre - Pass - 1Pic - Pass - 2Tre - Pass
+43;E;2Cor;250;No;8;12;0;5;5;6;0;4;0;5;Pass;NO;0.5841;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass
+43;S;Pass;0;No;11;21;0;3;0;4;0;3;5;9;2Pic;NO;0.7588;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass - 2Cor
+43;W;3Tre;310;Si;10;13;0;4;3;4;0;4;0;5;3Tre;SI;0.5785;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass - 2Cor - Pass
+43;N;Pass;0;No;5;29;4;9;0;5;0;5;0;5;3Pic;NO;0.9974;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass - 2Cor - Pass - 3Tre
+43;E;4Cor;450;No;10;12;0;5;5;6;0;4;0;5;Pass;NO;0.515;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass - 2Cor - Pass - 3Tre - Pass
+43;S;Pass;0;No;11;21;0;3;0;4;0;3;5;9;Pass;SI;0.6883;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass - 2Cor - Pass - 3Tre - Pass - 4Cor
+43;W;Pass;0;No;10;13;0;4;3;4;0;4;0;5;Pass;SI;0.8398;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass - 2Cor - Pass - 3Tre - Pass - 4Cor - Pass
+43;N;Pass;0;No;5;29;4;9;0;5;0;5;0;5;Pass;SI;0.6833;1Tre - Pass - 1Pic - Pass - 2Tre - Pass - Pass - 2Cor - Pass - 3Tre - Pass - 4Cor - Pass - Pass
+44;W;1Pic;170;No;11;21;5;9;0;6;0;6;0;6;1Pic;SI;0.9999;
+44;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1Pic
+44;E;Pass;0;No;0;5;0;3;0;5;0;6;0;6;1NT;NO;0.4165;1Pic - Pass
+44;S;X;171;No;10;29;0;3;3;6;3;6;3;6;2NT;NO;0.6132;1Pic - Pass - Pass
+44;W;XX;172;No;16;21;5;9;0;6;0;6;0;6;4Pic;NO;0.6766;1Pic - Pass - Pass - X
+44;N;2Tre;210;No;0;11;0;5;0;3;0;4;3;6;2Tre;SI;0.6402;1Pic - Pass - Pass - X - XX
+44;E;2Pic;270;No;0;5;2;3;0;5;0;6;0;6;Pass;NO;0.9464;1Pic - Pass - Pass - X - XX - 2Tre
+44;S;Pass;0;No;10;14;0;3;3;6;3;6;3;6;3Tre;NO;0.5002;1Pic - Pass - Pass - X - XX - 2Tre - 2Pic
+44;W;Pass;0;No;16;21;5;6;0;6;0;6;0;6;4Pic;NO;0.9658;1Pic - Pass - Pass - X - XX - 2Tre - 2Pic - Pass
+44;N;Pass;0;No;0;8;0;5;0;3;0;4;3;6;3Pic;NO;0.9378;1Pic - Pass - Pass - X - XX - 2Tre - 2Pic - Pass - Pass
+45;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+45;E;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.999;Pass
+45;S;1Cor;150;No;8;17;0;4;5;9;0;4;0;5;2Cor;NO;0.9116;Pass - 1Tre
+45;W;Pass;0;No;0;7;0;4;0;4;0;5;0;4;1Tre;NO;0.4183;Pass - 1Tre - 1Cor
+45;N;2Cor;250;No;5;9;0;4;3;4;0;5;0;5;2Tre;NO;0.9521;Pass - 1Tre - 1Cor - Pass
+45;E;X;251;Si;15;21;4;4;0;2;3;4;4;5;2Tre;NO;0.7479;Pass - 1Tre - 1Cor - Pass - 2Cor
+45;S;Pass;0;No;8;14;0;4;5;6;0;4;0;5;3Pic;NO;0.4279;Pass - 1Tre - 1Cor - Pass - 2Cor - X
+45;W;2NT;290;No;5;7;2;4;3;4;2;5;2;3;3NT;NO;0.9537;Pass - 1Tre - 1Cor - Pass - 2Cor - X - Pass
+45;N;Pass;0;No;5;9;0;4;3;4;0;5;0;5;Pass;SI;0.6356;Pass - 1Tre - 1Cor - Pass - 2Cor - X - Pass - 2NT
+45;E;Pass;0;No;15;21;4;4;0;2;3;4;4;5;5Pic;NO;0.458;Pass - 1Tre - 1Cor - Pass - 2Cor - X - Pass - 2NT - Pass
+45;S;3Cor;350;No;10;14;0;4;6;6;0;4;0;5;Pass;NO;0.554;Pass - 1Tre - 1Cor - Pass - 2Cor - X - Pass - 2NT - Pass - Pass
+45;W;Pass;0;No;5;7;2;4;3;4;2;5;2;3;3NT;NO;0.9653;Pass - 1Tre - 1Cor - Pass - 2Cor - X - Pass - 2NT - Pass - Pass - 3Cor
+45;N;Pass;0;No;5;9;0;4;3;4;0;5;0;5;4Tre;NO;0.9624;Pass - 1Tre - 1Cor - Pass - 2Cor - X - Pass - 2NT - Pass - Pass - 3Cor - Pass
+45;E;Pass;0;No;15;21;4;4;0;2;3;4;4;5;Pass;SI;0.5399;Pass - 1Tre - 1Cor - Pass - 2Cor - X - Pass - 2NT - Pass - Pass - 3Cor - Pass - Pass
+46;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+46;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9976;Pass
+46;W;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.9982;Pass - Pass
+46;N;1Pic;170;No;8;17;5;9;0;4;0;4;0;5;2Pic;NO;0.5933;Pass - Pass - 1Tre
+46;E;Pass;0;No;0;9;0;6;0;5;0;6;0;4;X;NO;0.4945;Pass - Pass - 1Tre - 1Pic
+46;S;Pass;0;No;0;11;0;3;0;6;0;6;0;6;Pass;SI;0.6357;Pass - Pass - 1Tre - 1Pic - Pass
+46;W;2Tre;210;No;11;16;0;4;0;4;0;3;5;9;1Pic;NO;0.989;Pass - Pass - 1Tre - 1Pic - Pass - Pass
+46;N;2Pic;270;No;10;17;6;9;0;4;0;4;0;5;Pass;NO;0.82;Pass - Pass - 1Tre - 1Pic - Pass - Pass - 2Tre
+46;E;Pass;0;No;0;9;0;6;0;5;0;6;0;4;2Pic;NO;0.5048;Pass - Pass - 1Tre - 1Pic - Pass - Pass - 2Tre - 2Pic
+46;S;Pass;0;No;0;11;0;3;0;6;0;6;0;6;Pass;SI;0.9866;Pass - Pass - 1Tre - 1Pic - Pass - Pass - 2Tre - 2Pic - Pass
+46;W;Pass;0;No;11;16;0;4;0;4;0;3;5;9;Pass;SI;0.9288;Pass - Pass - 1Tre - 1Pic - Pass - Pass - 2Tre - 2Pic - Pass - Pass
+47;S;1Cor;150;No;11;21;0;4;5;9;0;6;0;6;1Cor;SI;0.9997;
+47;W;1NT;190;No;15;18;2;4;2;5;2;5;2;5;2NT;NO;0.4457;1Cor
+47;N;Pass;0;No;0;7;0;5;0;3;0;5;0;5;X;NO;0.6486;1Cor - 1NT
+47;E;2Cor;250;Si;0;15;5;7;0;4;0;5;0;5;2Dia;NO;0.2903;1Cor - 1NT - Pass
+47;S;Pass;0;No;11;14;0;4;5;9;0;6;0;6;Pass;SI;0.5817;1Cor - 1NT - Pass - 2Cor
+47;W;2Pic;270;No;15;18;2;4;2;5;2;5;2;5;3NT;NO;0.9636;1Cor - 1NT - Pass - 2Cor - Pass
+47;N;Pass;0;No;0;7;0;5;0;3;0;5;0;5;Pass;SI;0.2432;1Cor - 1NT - Pass - 2Cor - Pass - 2Pic
+47;E;Pass;0;No;0;7;5;5;0;4;0;5;0;5;4Pic;NO;0.8276;1Cor - 1NT - Pass - 2Cor - Pass - 2Pic - Pass
+47;S;Pass;0;No;11;14;0;4;5;9;0;6;0;6;3Tre;NO;0.8203;1Cor - 1NT - Pass - 2Cor - Pass - 2Pic - Pass - Pass
+48;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;
+48;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;Pass
+48;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9982;Pass - Pass
+48;S;1Tre;110;No;11;21;0;4;0;4;0;3;2;9;1Tre;SI;0.9019;Pass - Pass - Pass
+48;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;Pass - Pass - Pass - 1Tre
+48;N;1Cor;150;No;0;11;0;6;4;6;0;6;0;6;Pass;NO;0.8712;Pass - Pass - Pass - 1Tre - Pass
+48;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.973;Pass - Pass - Pass - 1Tre - Pass - 1Cor
+48;S;3Cor;350;No;16;18;0;4;4;4;0;3;2;9;1Pic;NO;0.8013;Pass - Pass - Pass - 1Tre - Pass - 1Cor - Pass
+48;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9972;Pass - Pass - Pass - 1Tre - Pass - 1Cor - Pass - 3Cor
+48;N;Pass;0;No;0;6;0;6;4;6;0;6;0;6;Pass;SI;0.8645;Pass - Pass - Pass - 1Tre - Pass - 1Cor - Pass - 3Cor - Pass
+48;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9982;Pass - Pass - Pass - 1Tre - Pass - 1Cor - Pass - 3Cor - Pass - Pass
+49;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+49;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass
+49;S;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9992;Pass - Pass
+49;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9651;Pass - Pass - 1Dia
+49;N;1Pic;170;No;5;11;4;5;0;5;0;5;0;5;2Pic;NO;0.8923;Pass - Pass - 1Dia - Pass
+49;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9831;Pass - Pass - 1Dia - Pass - 1Pic
+49;S;3Tre;310;No;18;21;0;3;0;3;4;6;4;6;2Dia;NO;0.8385;Pass - Pass - 1Dia - Pass - 1Pic - Pass
+49;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9971;Pass - Pass - 1Dia - Pass - 1Pic - Pass - 3Tre
+49;N;4Tre;410;No;9;11;4;5;0;5;0;3;4;5;3NT;NO;0.8727;Pass - Pass - 1Dia - Pass - 1Pic - Pass - 3Tre - Pass
+49;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9997;Pass - Pass - 1Dia - Pass - 1Pic - Pass - 3Tre - Pass - 4Tre
+49;S;5Tre;510;No;18;21;0;3;0;3;4;6;4;6;4Dia;NO;0.9898;Pass - Pass - 1Dia - Pass - 1Pic - Pass - 3Tre - Pass - 4Tre - Pass
+49;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9993;Pass - Pass - 1Dia - Pass - 1Pic - Pass - 3Tre - Pass - 4Tre - Pass - 5Tre
+49;N;Pass;0;No;9;11;4;5;0;5;0;3;4;5;3NT;NO;0.7009;Pass - Pass - 1Dia - Pass - 1Pic - Pass - 3Tre - Pass - 4Tre - Pass - 5Tre - Pass
+49;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9999;Pass - Pass - 1Dia - Pass - 1Pic - Pass - 3Tre - Pass - 4Tre - Pass - 5Tre - Pass - Pass
+50;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+50;S;2NT;290;No;19;21;2;5;2;5;2;5;2;5;2NT;SI;0.9999;Pass
+50;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9984;Pass - 2NT
+50;N;3Tre;310;Si;4;18;0;4;0;5;0;5;0;5;3Dia;NO;0.6614;Pass - 2NT - Pass
+50;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9921;Pass - 2NT - Pass - 3Tre
+50;S;3NT;390;No;19;21;2;3;5;5;2;3;2;3;3Dia;NO;0.713;Pass - 2NT - Pass - 3Tre - Pass
+50;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9991;Pass - 2NT - Pass - 3Tre - Pass - 3NT
+50;N;4Cor;450;No;4;10;0;4;3;5;0;5;0;5;4Tre;NO;0.5192;Pass - 2NT - Pass - 3Tre - Pass - 3NT - Pass
+50;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - 2NT - Pass - 3Tre - Pass - 3NT - Pass - 4Cor
+50;S;Pass;0;No;19;21;2;3;5;5;2;3;2;3;4NT;NO;0.9367;Pass - 2NT - Pass - 3Tre - Pass - 3NT - Pass - 4Cor - Pass
+50;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9986;Pass - 2NT - Pass - 3Tre - Pass - 3NT - Pass - 4Cor - Pass - Pass
+51;S;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9975;
+51;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.993;1Dia
+51;N;1Pic;170;Si;5;29;4;9;0;5;0;6;0;6;1Pic;SI;0.9881;1Dia - Pass
+51;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9929;1Dia - Pass - 1Pic
+51;S;2Dia;230;No;11;14;0;3;0;4;5;9;0;6;1NT;NO;0.9734;1Dia - Pass - 1Pic - Pass
+51;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9929;1Dia - Pass - 1Pic - Pass - 2Dia
+51;N;3Tre;310;Si;12;29;4;6;0;3;0;4;3;6;2Dia;NO;0.8995;1Dia - Pass - 1Pic - Pass - 2Dia - Pass
+51;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9984;1Dia - Pass - 1Pic - Pass - 2Dia - Pass - 3Tre
+51;S;3Pic;370;Si;11;14;3;3;0;4;5;9;0;6;Pass;NO;0.5824;1Dia - Pass - 1Pic - Pass - 2Dia - Pass - 3Tre - Pass
+51;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9993;1Dia - Pass - 1Pic - Pass - 2Dia - Pass - 3Tre - Pass - 3Pic
+51;N;4Pic;470;No;12;29;5;6;0;3;0;4;3;6;4Tre;NO;0.9591;1Dia - Pass - 1Pic - Pass - 2Dia - Pass - 3Tre - Pass - 3Pic - Pass
+51;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9999;1Dia - Pass - 1Pic - Pass - 2Dia - Pass - 3Tre - Pass - 3Pic - Pass - 4Pic
+51;S;Pass;0;No;11;14;3;3;0;4;5;9;0;6;Pass;SI;0.9982;1Dia - Pass - 1Pic - Pass - 2Dia - Pass - 3Tre - Pass - 3Pic - Pass - 4Pic - Pass
+51;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9997;1Dia - Pass - 1Pic - Pass - 2Dia - Pass - 3Tre - Pass - 3Pic - Pass - 4Pic - Pass - Pass
+52;W;1Pic;170;No;11;21;5;9;0;6;0;6;0;6;1Pic;SI;0.9999;
+52;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1Pic
+52;E;3Dia;330;Si;6;9;4;5;0;6;0;6;0;6;Pass;NO;0.4546;1Pic - Pass
+52;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.999;1Pic - Pass - 3Dia
+52;W;3Cor;350;Si;12;16;5;6;3;4;0;4;0;4;3Pic;NO;0.3715;1Pic - Pass - 3Dia - Pass
+52;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9988;1Pic - Pass - 3Dia - Pass - 3Cor
+52;E;4Pic;470;No;7;9;4;5;0;4;0;6;0;6;Pass;NO;0.8507;1Pic - Pass - 3Dia - Pass - 3Cor - Pass
+52;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9996;1Pic - Pass - 3Dia - Pass - 3Cor - Pass - 4Pic
+52;W;Pass;0;No;12;16;5;6;3;4;0;4;0;4;Pass;SI;0.7332;1Pic - Pass - 3Dia - Pass - 3Cor - Pass - 4Pic - Pass
+52;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9995;1Pic - Pass - 3Dia - Pass - 3Cor - Pass - 4Pic - Pass - Pass
+53;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+53;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass
+53;S;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9992;Pass - Pass
+53;W;1Pic;170;No;8;17;5;9;0;4;0;5;0;6;1Cor;NO;0.8379;Pass - Pass - 1Dia
+53;N;X;171;No;5;11;0;4;4;5;0;6;0;6;2Cor;NO;0.7917;Pass - Pass - 1Dia - 1Pic
+53;E;2Cor;250;Si;7;9;3;4;0;5;0;5;0;5;2Pic;NO;0.8157;Pass - Pass - 1Dia - 1Pic - X
+53;S;X;251;No;11;21;0;4;3;4;4;9;0;6;1Dia;NO;0.5743;Pass - Pass - 1Dia - 1Pic - X - 2Cor
+53;W;3Pic;370;No;12;15;5;9;0;4;0;5;0;6;3Pic;SI;0.8344;Pass - Pass - 1Dia - 1Pic - X - 2Cor - X
+53;N;Pass;0;No;5;9;0;4;4;5;0;6;0;6;4Tre;NO;0.6826;Pass - Pass - 1Dia - 1Pic - X - 2Cor - X - 3Pic
+53;E;Pass;0;No;7;9;3;4;0;5;0;5;0;5;4Dia;NO;0.5815;Pass - Pass - 1Dia - 1Pic - X - 2Cor - X - 3Pic - Pass
+53;S;Pass;0;No;11;21;0;4;3;4;4;9;0;6;3Tre;NO;0.4244;Pass - Pass - 1Dia - 1Pic - X - 2Cor - X - 3Pic - Pass - Pass
+54;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+54;S;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.9998;Pass
+54;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9986;Pass - 1NT
+54;N;2Tre;210;Si;0;21;0;5;0;5;0;5;0;5;2Dia;NO;0.8187;Pass - 1NT - Pass
+54;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9853;Pass - 1NT - Pass - 2Tre
+54;S;2Pic;270;No;14;17;4;5;2;5;2;5;2;5;3Tre;NO;0.5647;Pass - 1NT - Pass - 2Tre - Pass
+54;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9991;Pass - 1NT - Pass - 2Tre - Pass - 2Pic
+54;N;4Pic;470;No;8;14;4;5;0;5;0;5;0;5;4Pic;SI;0.7716;Pass - 1NT - Pass - 2Tre - Pass - 2Pic - Pass
+54;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9997;Pass - 1NT - Pass - 2Tre - Pass - 2Pic - Pass - 4Pic
+54;S;Pass;0;No;14;17;4;5;2;5;2;5;2;5;4NT;NO;0.6067;Pass - 1NT - Pass - 2Tre - Pass - 2Pic - Pass - 4Pic - Pass
+54;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9998;Pass - 1NT - Pass - 2Tre - Pass - 2Pic - Pass - 4Pic - Pass - Pass
+55;S;3Dia;330;No;6;11;0;3;0;3;6;7;0;5;3Tre;NO;0.8076;
+55;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9978;3Dia
+55;N;4Dia;430;No;5;14;0;5;0;5;2;4;0;5;2Dia;NO;0.9112;3Dia - Pass
+55;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9991;3Dia - Pass - 4Dia
+55;S;Pass;0;No;6;11;0;3;0;3;6;7;0;5;4Cor;NO;0.9933;3Dia - Pass - 4Dia - Pass
+55;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9971;3Dia - Pass - 4Dia - Pass - Pass
+56;W;1Pic;170;No;11;21;5;9;0;6;0;6;0;6;1Pic;SI;0.9999;
+56;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9979;1Pic
+56;E;2Cor;250;Si;12;29;0;5;5;9;0;6;0;6;2Cor;SI;0.994;1Pic - Pass
+56;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9993;1Pic - Pass - 2Cor
+56;W;2Pic;270;No;11;21;5;9;0;6;0;6;0;6;2Pic;SI;0.6028;1Pic - Pass - 2Cor - Pass
+56;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9939;1Pic - Pass - 2Cor - Pass - 2Pic
+56;E;4Pic;470;No;11;13;4;5;5;6;0;4;0;4;3Cor;NO;0.4388;1Pic - Pass - 2Cor - Pass - 2Pic - Pass
+56;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9986;1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 4Pic
+56;W;Pass;0;No;11;21;5;9;0;6;0;6;0;6;Pass;SI;0.9585;1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 4Pic - Pass
+56;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9994;1Pic - Pass - 2Cor - Pass - 2Pic - Pass - 4Pic - Pass - Pass
+57;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+57;E;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.8037;Pass
+57;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9984;Pass - 1NT
+57;W;2Cor;250;Si;0;25;5;9;0;3;0;5;0;5;3Cor;NO;0.4504;Pass - 1NT - Pass
+57;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - 1NT - Pass - 2Cor
+57;E;2Pic;270;No;14;17;2;4;2;5;2;5;2;5;2Pic;SI;0.4165;Pass - 1NT - Pass - 2Cor - Pass
+57;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9969;Pass - 1NT - Pass - 2Cor - Pass - 2Pic
+57;W;Pass;0;No;0;7;5;7;0;3;0;5;0;5;4Pic;NO;0.9463;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass
+57;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9993;Pass - 1NT - Pass - 2Cor - Pass - 2Pic - Pass - Pass
+101;N;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9999;
+101;E;2Pic;270;No;0;8;5;7;0;4;0;4;0;4;3Pic;NO;0.9996;1Dia
+101;S;Pass;0;No;0;10;0;6;0;6;0;6;0;6;Pass;SI;0.9679;1Dia - 2Pic
+101;W;Pass;0;No;0;10;0;6;0;6;0;6;0;6;Pass;SI;0.8763;1Dia - 2Pic - Pass
+101;N;2NT;290;No;17;19;2;4;1;4;4;6;1;4;2Pic;NO;0.7882;1Dia - 2Pic - Pass - Pass
+101;E;Pass;0;No;0;8;5;7;0;4;0;4;0;4;X;NO;0.4201;1Dia - 2Pic - Pass - Pass - 2NT
+101;S;3NT;390;No;6;10;0;6;0;6;0;6;0;6;3Dia;NO;0.5178;1Dia - 2Pic - Pass - Pass - 2NT - Pass
+101;W;Pass;0;No;0;10;0;6;0;6;0;6;0;6;Pass;SI;0.9868;1Dia - 2Pic - Pass - Pass - 2NT - Pass - 3NT
+101;N;Pass;0;No;17;19;2;4;1;4;4;6;1;4;4Pic;NO;0.4877;1Dia - 2Pic - Pass - Pass - 2NT - Pass - 3NT - Pass
+101;E;Pass;0;No;0;8;5;7;0;4;0;4;0;4;Pass;SI;0.6359;1Dia - 2Pic - Pass - Pass - 2NT - Pass - 3NT - Pass - Pass
+102;E;1NT;190;No;14;17;2;5;2;5;2;5;2;5;1NT;SI;0.9282;
+102;S;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9971;1NT
+102;W;Pass;0;No;0;8;0;4;0;4;0;5;0;5;3Pic;NO;0.9621;1NT - Pass
+102;N;2Tre;210;Si;8;15;0;6;0;6;0;3;0;3;3Tre;NO;0.4558;1NT - Pass - Pass
+102;E;Pass;0;No;14;17;2;5;2;5;2;5;2;5;2NT;NO;0.4183;1NT - Pass - Pass - 2Tre
+102;S;2Cor;250;No;0;10;0;4;2;4;0;7;0;7;3Tre;NO;0.4942;1NT - Pass - Pass - 2Tre - Pass
+102;W;Pass;0;No;0;8;0;4;0;4;0;5;0;5;3Pic;NO;0.4441;1NT - Pass - Pass - 2Tre - Pass - 2Cor
+102;N;Pass;0;No;8;15;0;6;0;6;0;3;0;3;2Pic;NO;0.4579;1NT - Pass - Pass - 2Tre - Pass - 2Cor - Pass
+102;E;Pass;0;No;14;17;2;5;2;5;2;5;2;5;2NT;NO;0.444;1NT - Pass - Pass - 2Tre - Pass - 2Cor - Pass - Pass
+103;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+103;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9939;Pass
+103;N;1Tre;110;No;11;21;0;5;0;5;0;4;2;9;1Tre;SI;0.99;Pass - Pass
+103;E;1NT;190;No;15;18;1;5;1;5;1;5;2;5;X;NO;0.9933;Pass - Pass - 1Tre
+103;S;X;191;No;9;11;0;6;0;6;0;6;0;6;Pass;NO;0.9288;Pass - Pass - 1Tre - 1NT
+103;W;Pass;0;No;0;11;0;4;0;4;0;5;0;5;2Tre;NO;0.9641;Pass - Pass - 1Tre - 1NT - X
+103;N;Pass;0;No;11;21;0;5;0;5;0;4;2;9;1Dia;NO;0.9108;Pass - Pass - 1Tre - 1NT - X - Pass
+103;E;Pass;0;No;15;18;1;5;1;5;1;5;2;5;X;NO;0.9776;Pass - Pass - 1Tre - 1NT - X - Pass - Pass
+104;W;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9998;
+104;N;X;131;No;10;25;0;8;0;8;0;5;0;8;1Cor;NO;0.5117;1Dia
+104;E;3Dia;330;No;2;6;0;5;0;5;4;6;0;6;3Pic;NO;0.9817;1Dia - X
+104;S;3Cor;350;No;6;10;0;4;4;6;0;4;0;6;2Pic;NO;0.7175;1Dia - X - 3Dia
+104;W;4Dia;430;No;11;17;0;4;0;4;5;7;0;6;Pass;NO;0.3953;1Dia - X - 3Dia - 3Cor
+104;N;Pass;0;No;10;14;3;4;3;4;0;4;2;5;2NT;NO;0.5674;1Dia - X - 3Dia - 3Cor - 4Dia
+104;E;Pass;0;No;2;6;0;5;0;5;4;6;0;6;3Pic;NO;0.9995;1Dia - X - 3Dia - 3Cor - 4Dia - Pass
+104;S;Pass;0;No;6;10;0;4;4;6;0;4;0;6;3Tre;NO;0.7721;1Dia - X - 3Dia - 3Cor - 4Dia - Pass - Pass
+105;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+105;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass
+105;S;1Cor;150;No;11;21;0;4;5;9;0;6;0;6;1Cor;SI;0.9988;Pass - Pass
+105;W;1Pic;170;No;7;17;5;8;0;5;0;6;0;6;1Pic;SI;0.9995;Pass - Pass - 1Cor
+105;N;Pass;0;No;0;11;0;6;0;3;0;6;0;6;2Cor;NO;0.6917;Pass - Pass - 1Cor - 1Pic
+105;E;Pass;0;No;0;8;0;3;0;6;0;6;0;6;1Pic;NO;0.7668;Pass - Pass - 1Cor - 1Pic - Pass
+105;S;X;171;No;12;21;0;4;5;9;0;6;0;6;2Tre;NO;0.4975;Pass - Pass - 1Cor - 1Pic - Pass - Pass
+105;W;Pass;0;No;7;14;5;6;0;5;0;6;0;6;Pass;SI;0.8512;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X
+105;N;2Cor;250;No;0;5;0;4;2;3;0;6;0;6;3Tre;NO;0.6196;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass
+105;E;Pass;0;No;0;8;0;3;0;6;0;6;0;6;Pass;SI;0.5947;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass - 2Cor
+105;S;2Pic;270;Si;18;21;0;4;5;6;0;4;0;4;2Cor;NO;0.9175;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass - 2Cor - Pass
+105;W;Pass;0;No;7;14;5;6;0;5;0;6;0;6;Pass;SI;0.9391;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass - 2Cor - Pass - 2Pic
+105;N;3Cor;350;No;0;5;0;5;2;3;0;4;0;4;3NT;NO;0.552;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass - 2Cor - Pass - 2Pic - Pass
+105;E;Pass;0;No;0;8;0;3;0;6;0;6;0;6;Pass;SI;0.4523;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass - 2Cor - Pass - 2Pic - Pass - 3Cor
+105;S;Pass;0;Si;18;20;0;4;5;6;0;4;0;4;3NT;NO;0.3865;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass - 2Cor - Pass - 2Pic - Pass - 3Cor - Pass
+105;W;Pass;0;No;7;14;5;6;0;5;0;6;0;6;Pass;SI;0.9868;Pass - Pass - 1Cor - 1Pic - Pass - Pass - X - Pass - 2Cor - Pass - 2Pic - Pass - 3Cor - Pass - Pass
+106;E;1Cor;150;No;11;21;0;4;5;9;0;6;0;6;1Cor;SI;0.9992;
+106;S;2Dia;230;No;10;17;0;4;0;4;5;6;0;4;3Pic;NO;0.7556;1Cor
+106;W;3Dia;330;Si;10;20;0;6;3;5;0;5;0;5;X;NO;0.9922;1Cor - 2Dia
+106;N;Pass;0;No;0;8;0;6;0;6;0;3;0;6;Pass;SI;0.3875;1Cor - 2Dia - 3Dia
+106;E;3Cor;350;No;11;13;0;4;5;5;0;4;0;4;3Cor;SI;0.4324;1Cor - 2Dia - 3Dia - Pass
+106;S;Pass;0;No;10;17;0;4;0;4;5;6;0;4;Pass;SI;0.6288;1Cor - 2Dia - 3Dia - Pass - 3Cor
+106;W;Pass;0;Si;10;12;0;6;3;4;0;5;0;5;3NT;NO;0.999;1Cor - 2Dia - 3Dia - Pass - 3Cor - Pass
+106;N;Pass;0;No;0;8;0;6;0;6;0;3;0;6;Pass;SI;0.9793;1Cor - 2Dia - 3Dia - Pass - 3Cor - Pass - Pass
+107;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+107;W;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9999;Pass
+107;N;X;131;No;10;25;0;8;0;8;0;5;0;8;1Cor;NO;0.4775;Pass - 1Dia
+107;E;1Pic;170;Si;5;20;4;7;0;5;0;5;0;5;Pass;NO;0.4293;Pass - 1Dia - X
+107;S;2Cor;250;No;7;10;0;4;4;6;0;5;0;5;2Cor;SI;0.5924;Pass - 1Dia - X - 1Pic
+107;W;Pass;0;No;11;14;0;4;0;4;4;6;0;4;3Cor;NO;0.3857;Pass - 1Dia - X - 1Pic - 2Cor
+107;N;Pass;0;No;10;14;3;4;3;4;0;3;2;5;2NT;NO;0.9889;Pass - 1Dia - X - 1Pic - 2Cor - Pass
+107;E;Pass;0;Si;5;9;4;5;0;5;0;5;0;5;3Tre;NO;0.5364;Pass - 1Dia - X - 1Pic - 2Cor - Pass - Pass
+108;W;3Cor;350;No;3;10;0;4;6;7;0;4;0;4;1Tre;NO;0.4268;
+108;N;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9957;3Cor
+108;E;4Cor;450;No;0;22;0;6;1;6;0;6;0;6;Pass;NO;0.4765;3Cor - Pass
+108;S;X;451;No;12;25;0;7;0;3;0;7;0;7;2NT;NO;0.8154;3Cor - Pass - 4Cor
+108;W;Pass;0;No;3;10;0;4;6;7;0;4;0;4;4Pic;NO;0.9578;3Cor - Pass - 4Cor - X
+108;N;Pass;0;Describe;0;14;0;4;0;4;0;5;0;5;4Tre;NO;0.9244;3Cor - Pass - 4Cor - X - Pass
+108;E;Pass;0;No;0;22;0;6;1;6;0;6;0;6;Pass;SI;0.9915;3Cor - Pass - 4Cor - X - Pass - Pass
+109;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;
+109;E;1NT;190;No;14;17;2;5;2;5;2;6;2;6;1Pic;NO;0.8531;Pass
+109;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9994;Pass - 1NT
+109;W;2Tre;210;Si;0;20;0;5;0;5;0;6;0;6;3NT;NO;0.5969;Pass - 1NT - Pass
+109;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9985;Pass - 1NT - Pass - 2Tre
+109;E;2Cor;250;No;14;17;2;4;4;5;2;5;2;5;3Tre;NO;0.5548;Pass - 1NT - Pass - 2Tre - Pass
+109;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - 1NT - Pass - 2Tre - Pass - 2Cor
+109;W;3Tre;310;Si;9;20;4;4;0;3;0;4;5;6;3Pic;NO;0.9272;Pass - 1NT - Pass - 2Tre - Pass - 2Cor - Pass
+109;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;Pass - 1NT - Pass - 2Tre - Pass - 2Cor - Pass - 3Tre
+109;E;3Pic;370;Si;14;17;4;4;4;4;2;3;2;3;4Cor;NO;0.9423;Pass - 1NT - Pass - 2Tre - Pass - 2Cor - Pass - 3Tre - Pass
+109;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9996;Pass - 1NT - Pass - 2Tre - Pass - 2Cor - Pass - 3Tre - Pass - 3Pic
+109;W;4Pic;470;No;9;20;4;4;0;3;0;4;5;6;3NT;NO;0.938;Pass - 1NT - Pass - 2Tre - Pass - 2Cor - Pass - 3Tre - Pass - 3Pic - Pass
+110;E;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9994;
+110;S;1Pic;170;No;7;17;5;8;0;4;0;5;0;5;1Pic;SI;0.8153;1Dia
+110;W;3Pic;370;Si;11;20;0;1;0;3;4;7;0;5;3Cor;NO;0.8812;1Dia - 1Pic
+110;N;Pass;0;No;0;10;0;4;0;6;0;4;0;7;2Tre;NO;0.9157;1Dia - 1Pic - 3Pic
+110;E;4Dia;430;No;11;13;0;4;0;4;4;9;0;6;4Tre;NO;0.5353;1Dia - 1Pic - 3Pic - Pass
+110;S;Pass;0;No;7;17;5;7;0;4;0;5;0;5;Pass;SI;0.8716;1Dia - 1Pic - 3Pic - Pass - 4Dia
+110;W;5Dia;530;No;11;17;0;1;0;3;4;7;0;5;4Pic;NO;0.7919;1Dia - 1Pic - 3Pic - Pass - 4Dia - Pass
+110;N;Pass;0;No;0;10;0;4;0;6;0;4;0;7;2Tre;NO;0.9955;1Dia - 1Pic - 3Pic - Pass - 4Dia - Pass - 5Dia
+110;E;Pass;0;No;11;13;0;4;0;4;4;9;0;6;4Tre;NO;0.7558;1Dia - 1Pic - 3Pic - Pass - 4Dia - Pass - 5Dia - Pass
+110;S;Pass;0;No;7;17;5;7;0;4;0;5;0;5;Pass;SI;0.8909;1Dia - 1Pic - 3Pic - Pass - 4Dia - Pass - 5Dia - Pass - Pass
+111;S;1Pic;170;No;11;21;5;9;0;6;0;6;0;6;1Pic;SI;0.9999;
+111;W;3Dia;330;No;0;10;0;4;0;4;6;7;0;4;Pass;NO;0.4578;1Pic
+111;N;X;331;No;10;20;0;2;3;5;0;4;0;7;X;SI;0.787;1Pic - 3Dia
+111;E;Pass;0;No;0;15;0;6;0;6;0;3;0;6;Pass;SI;0.9166;1Pic - 3Dia - X
+111;S;4Pic;470;No;15;18;6;8;0;4;0;4;0;5;3Pic;NO;0.4473;1Pic - 3Dia - X - Pass
+111;W;Pass;0;No;0;10;0;4;0;4;6;7;0;4;Pass;SI;0.8388;1Pic - 3Dia - X - Pass - 4Pic
+111;N;Pass;0;No;10;15;0;2;3;5;0;4;0;7;4NT;NO;0.4192;1Pic - 3Dia - X - Pass - 4Pic - Pass
+111;E;Pass;0;No;0;15;0;6;0;6;0;3;0;6;Pass;SI;0.876;1Pic - 3Dia - X - Pass - 4Pic - Pass - Pass
+112;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9986;
+112;N;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9988;Pass
+112;E;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9998;Pass - Pass
+112;S;X;131;No;11;25;0;8;0;8;0;5;0;8;1Pic;NO;0.8209;Pass - Pass - 1Dia
+112;W;1Cor;150;No;5;11;0;4;4;5;0;6;0;6;4Pic;NO;0.3404;Pass - Pass - 1Dia - X
+112;N;1Pic;170;No;5;8;4;5;0;4;0;5;0;5;2Pic;NO;0.7547;Pass - Pass - 1Dia - X - 1Cor
+112;E;Pass;0;No;11;14;0;4;0;3;4;6;0;5;2Cor;NO;0.9993;Pass - Pass - 1Dia - X - 1Cor - 1Pic
+112;S;2Cor;250;No;17;20;0;3;5;7;0;4;0;5;2NT;NO;0.55;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass
+112;W;3Dia;330;No;5;9;0;4;4;5;4;5;0;4;2Tre;NO;0.8965;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass - 2Cor
+112;N;3Cor;350;No;5;6;4;5;3;4;0;5;0;5;Pass;NO;0.5698;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass - 2Cor - 3Dia
+112;E;Pass;0;No;11;14;0;4;0;3;4;6;0;5;2Cor;NO;0.4722;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass - 2Cor - 3Dia - 3Cor
+112;S;4Cor;450;No;18;20;0;3;5;7;0;4;0;5;4Pic;NO;0.7755;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass - 2Cor - 3Dia - 3Cor - Pass
+112;W;Pass;0;No;5;9;0;4;4;5;4;5;0;4;2Tre;NO;0.5625;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass - 2Cor - 3Dia - 3Cor - Pass - 4Cor
+112;N;Pass;0;No;5;6;4;5;3;4;0;5;0;5;Pass;SI;0.7831;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass - 2Cor - 3Dia - 3Cor - Pass - 4Cor - Pass
+112;E;Pass;0;No;11;14;0;4;0;3;4;6;0;5;Pass;SI;0.5102;Pass - Pass - 1Dia - X - 1Cor - 1Pic - Pass - 2Cor - 3Dia - 3Cor - Pass - 4Cor - Pass - Pass
+113;N;1Tre;110;No;11;21;0;4;0;4;4;5;2;9;1Tre;SI;0.9996;
+113;E;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9975;1Tre
+113;S;1Pic;170;Si;5;22;4;8;0;5;0;6;0;6;1Pic;SI;0.9999;1Tre - Pass
+113;W;2Cor;250;No;8;18;0;4;5;7;0;5;0;5;X;NO;0.6849;1Tre - Pass - 1Pic
+113;N;4Pic;470;No;11;14;4;5;0;3;0;3;6;7;2Tre;NO;0.2555;1Tre - Pass - 1Pic - 2Cor
+113;E;5Cor;550;No;3;15;0;5;3;6;0;6;0;5;4Dia;NO;0.5104;1Tre - Pass - 1Pic - 2Cor - 4Pic
+113;S;Pass;0;Si;5;16;4;8;0;3;0;6;0;6;Pass;SI;0.8785;1Tre - Pass - 1Pic - 2Cor - 4Pic - 5Cor
+113;W;Pass;0;No;8;18;0;4;5;7;0;5;0;5;5NT;NO;0.9823;1Tre - Pass - 1Pic - 2Cor - 4Pic - 5Cor - Pass
+113;N;5Pic;570;No;11;14;4;5;0;3;0;3;6;7;6Dia;NO;0.9033;1Tre - Pass - 1Pic - 2Cor - 4Pic - 5Cor - Pass - Pass
+113;E;Pass;0;No;3;15;0;5;3;6;0;6;0;5;6Dia;NO;0.4587;1Tre - Pass - 1Pic - 2Cor - 4Pic - 5Cor - Pass - Pass - 5Pic
+113;S;Pass;0;Si;5;16;4;8;0;3;0;6;0;6;5Dia;NO;0.9788;1Tre - Pass - 1Pic - 2Cor - 4Pic - 5Cor - Pass - Pass - 5Pic - Pass
+113;W;Pass;0;No;8;18;0;4;5;7;0;5;0;5;6Cor;NO;0.5651;1Tre - Pass - 1Pic - 2Cor - 4Pic - 5Cor - Pass - Pass - 5Pic - Pass - Pass
+114;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9992;
+114;S;1Dia;130;No;11;21;0;4;0;4;4;9;0;6;1Dia;SI;0.9984;Pass
+114;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.989;Pass - 1Dia
+114;N;1Pic;170;Si;5;22;4;8;0;5;0;5;0;6;1Pic;SI;0.9992;Pass - 1Dia - Pass
+114;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9888;Pass - 1Dia - Pass - 1Pic
+114;S;2Pic;270;No;11;14;3;4;0;4;4;9;0;6;1NT;NO;0.9211;Pass - 1Dia - Pass - 1Pic - Pass
+114;W;Pass;0;No;0;14;0;6;0;6;0;6;0;6;Pass;SI;0.9912;Pass - 1Dia - Pass - 1Pic - Pass - 2Pic
+114;N;Pass;0;Si;5;10;4;7;0;5;0;5;0;6;Pass;SI;0.4326;Pass - 1Dia - Pass - 1Pic - Pass - 2Pic - Pass
+114;E;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9994;Pass - 1Dia - Pass - 1Pic - Pass - 2Pic - Pass - Pass
+115;S;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9962;
+115;W;Pass;0;No;0;11;0;6;0;6;0;6;0;6;Pass;SI;0.9939;Pass
+115;N;3Dia;330;No;0;12;0;4;0;4;6;7;0;5;1Pic;NO;0.7021;Pass - Pass
+115;E;X;331;No;12;25;0;8;0;8;0;4;0;8;X;SI;0.9999;Pass - Pass - 3Dia
+115;S;4Dia;430;No;0;11;0;6;0;6;3;4;0;6;Pass;NO;0.994;Pass - Pass - 3Dia - X
+115;W;4Cor;450;No;8;11;0;3;4;6;0;3;0;6;4NT;NO;0.2442;Pass - Pass - 3Dia - X - 4Dia
+115;N;Pass;0;No;0;12;0;4;0;4;6;7;0;5;3NT;NO;0.5912;Pass - Pass - 3Dia - X - 4Dia - 4Cor
+115;E;Pass;0;No;12;18;3;5;3;5;0;3;2;5;4NT;NO;0.8792;Pass - Pass - 3Dia - X - 4Dia - 4Cor - Pass
+115;S;Pass;0;No;0;11;0;6;0;6;3;4;0;6;Pass;SI;0.9996;Pass - Pass - 3Dia - X - 4Dia - 4Cor - Pass - Pass
