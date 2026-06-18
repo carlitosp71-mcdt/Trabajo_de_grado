@@ -1,0 +1,72 @@
+import pandas as pd
+import hands
+import os
+
+def test_hcp_restrictions():
+    """Prueba que las restricciones de HCP se apliquen correctamente"""
+    
+    # Crear un DataFrame de trayectoria con restricciones específicas de HCP
+    df_trayectoria = pd.DataFrame({
+        'Jugador': ['N', 'E', 'S', 'W'],
+        'Min_HCP': [10, 15, 5, 8],
+        'Max_HCP': [12, 18, 8, 12],
+        'Min_S': [3, 0, 0, 0],
+        'Max_S': [4, 6, 4, 6],
+        'Min_H': [3, 0, 0, 0],
+        'Max_H': [4, 6, 4, 6],
+        'Min_D': [3, 0, 0, 0],
+        'Max_D': [4, 6, 4, 6],
+        'Min_C': [0, 2, 0, 0],
+        'Max_C': [3, 9, 6, 6]
+    })
+    
+    print("=== Prueba de Restricciones HCP ===")
+    print("Restricciones configuradas:")
+    for _, row in df_trayectoria.iterrows():
+        print(f"  {row['Jugador']}: HCP {row['Min_HCP']}-{row['Max_HCP']}")
+    
+    # Configurar parámetros de prueba
+    i = 0
+    mano_actual = 2  # Para aplicar restricciones
+    cartas_fijas = ['AS', 'KS', 'QS', 'JS', 'AH', 'KH', 'QH', 'JH', 'AD', 'KD', 'QD', 'JD', 'AC']
+    jugador_fijo = 'N'
+    jugadores = ['N', 'E', 'S', 'W']
+    
+    print(f"\nCartas fijas para {jugador_fijo}: {cartas_fijas}")
+    print(f"HCP de cartas fijas: {hands.calculate_hcp_py(cartas_fijas)}")
+    
+    # Generar manos con restricciones
+    try:
+        manos_generadas = hands.solver_reparto_cartas(
+            i, mano_actual, cartas_fijas, jugador_fijo, jugadores, df_trayectoria
+        )
+        
+        if manos_generadas:
+            print("\n=== Manos Generadas ===")
+            for jugador, mano in manos_generadas.items():
+                hcp = hands.calculate_hcp_py(mano)
+                min_hcp = df_trayectoria[df_trayectoria['Jugador'] == jugador]['Min_HCP'].iloc[0]
+                max_hcp = df_trayectoria[df_trayectoria['Jugador'] == jugador]['Max_HCP'].iloc[0]
+                
+                print(f"\n{jugador}:")
+                print(f"  Mano: {mano}")
+                print(f"  HCP: {hcp} (rango permitido: {min_hcp}-{max_hcp})")
+                
+                # Verificar que cumple las restricciones
+                cumple_min = hcp >= min_hcp
+                cumple_max = hcp <= max_hcp
+                print(f"  Cumple mínimo: {'Sí' if cumple_min else 'No'}")
+                print(f"  Cumple máximo: {'Sí' if cumple_max else 'No'}")
+                
+                if not (cumple_min and cumple_max):
+                    print(f"  ❌ ERROR: {jugador} no cumple restricciones de HCP!")
+                else:
+                    print(f"  ✅ {jugador} cumple restricciones de HCP")
+        else:
+            print("❌ No se pudieron generar manos con las restricciones especificadas")
+            
+    except Exception as e:
+        print(f"❌ Error al generar manos: {e}")
+
+if __name__ == "__main__":
+    test_hcp_restrictions()

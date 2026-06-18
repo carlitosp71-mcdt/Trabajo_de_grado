@@ -1,0 +1,1292 @@
+# -*- coding: utf-8 -*-
+"""
+Sistema de Predicción de Voces en Bridge - VERSIÓN CON DATOS REALES
+====================================================================
+
+CORRECCIONES CRÍTICAS:
+1. ✅ Usa vocabulario español real del CSV (Pass, 1Cor, 1Dia, 1Pic, 1Tre)
+2. ✅ Carga datos REALES del CSV (no sintéticos)
+3. ✅ Procesa subastas por Board completo
+4. ✅ Maneja desbalanceo extremo (62% Pass)
+5. ✅ Genera CSV de validación con formato correcto
+
+Dataset Real:
+- Entrenamiento: 1,073 voces en 105 boards
+- Prueba: 804 voces en 72 boards
+- 32-34 voces únicas
+- Desbalanceo: Pass=62%, otros<3%
+"""
+
+import sys
+import io
+
+# Configurar UTF-8 para Windows
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+import pandas as pd
+from torch.utils.data import Dataset, DataLoader
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+import random
+import logging
+from collections import Counter, defaultdict
+import json
+import os
+from datetime import datetime
+from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"🚀 Usando dispositivo: {device}")
+
+# ============================================================================
+# CONFIGURACIÓN
+# ============================================================================
+
+CONFIG = {
+    # Rutas
+    'train_csv': '../SLM/Base_de_trayectorias_entrenadas00.csv',
+    'test_csv': '../SLM/Base_de_trayectorias_entrenadas1.csv',
+    
+    # Modelo
+    'embedding_dim': 128,
+    'hidden_dim': 256,
+    'num_layers': 2,
+    'dropout': 0.4,
+    
+    # Entrenamiento
+    'batch_size': 16,
+    'num_epochs': 100,
+    'learning_rate': 0.001,
+    'weight_decay': 1e-4,
+    
+    # Balanceo
+    'undersample_pass_to': 200,  # Reducir Pass de 665 a 200
+    'oversample_minority_to': 50,  # Aumentar minoritarias a mínimo 50
+    'use_class_weights': True,
+    'use_focal_loss': True,
+    'focal_gamma': 3.0,
+    
+    # Early stopping
+    'patience': 15,
+    'min_delta': 0.005,
+}
+
+# ============================================================================
+# VOCABULARIO DE VOCES - FORMATO ESPAÑOL REAL DEL CSV
+# ============================================================================
+
+BID_TOKENS = [
+    "Pass", "X", "XX",  # Pass, Double, Redouble
+    # Nivel 1
+    "1Tre", "1Dia", "1Cor", "1Pic", "1NT",
+    # Nivel 2
+    "2Tre", "2Dia", "2Cor", "2Pic", "2NT",
+    # Nivel 3
+    "3Tre", "3Dia", "3Cor", "3Pic", "3NT",
+    # Nivel 4
+    "4Tre", "4Dia", "4Cor", "4Pic", "4NT",
+    # Nivel 5
+    "5Tre", "5Dia", "5Cor", "5Pic", "5NT",
+    # Nivel 6
+    "6Tre", "6Dia", "6Cor", "6Pic", "6NT",
+    # Nivel 7
+    "7Tre", "7Dia", "7Cor", "7Pic", "7NT"
+]
+
+BID2IDX = {bid: idx for idx, bid in enumerate(BID_TOKENS)}
+IDX2BID = {idx: bid for bid, idx in BID2IDX.items()}
+
+print(f"📚 Vocabulario de voces: {len(BID_TOKENS)} tokens")
+print(f"   Formato: {BID_TOKENS[:10]}...")
+
+# ============================================================================
+# FUNCIONES DE GRILLA
+# ============================================================================
+
+def calculate_grilla(bid):
+    """
+    Calcula el valor de grilla para una subasta.
+    La grilla representa el nivel jerárquico de la subasta.
+    
+    Reglas:
+    - Pass = 0
+    - X (Double) = 171
+    - XX (Redouble) = 172
+    - Subastas: nivel * 100 + valor_palo
+      - Tre = 10, Dia = 30, Cor = 50, Pic = 70, NT = 90
+    """
+    if bid == "Pass":
+        return 0
+    elif bid == "X":
+        return 171
+    elif bid == "XX":
+        return 172
+    else:
+        # Extraer nivel y palo
+        if len(bid) >= 2:
+            level = int(bid[0])
+            suit = bid[1:]
+            
+            # Valores de palo
+            suit_values = {
+                "Tre": 10,
+                "Dia": 30,
+                "Cor": 50,
+                "Pic": 70,
+                "NT": 90
+            }
+            
+            suit_value = suit_values.get(suit, 0)
+            return level * 100 + suit_value
+    
+    return 0
+
+def get_max_grilla_from_auction(auction):
+    """
+    Obtiene la grilla máxima de las subastas previas.
+    """
+    if not auction:
+        return 0
+    
+    max_grilla = 0
+    for bid in auction:
+        grilla = calculate_grilla(bid)
+        max_grilla = max(max_grilla, grilla)
+    
+    return max_grilla
+
+def filter_legal_bids_by_grilla(legal_mask, auction_history, bid_tokens):
+    """
+    Filtra las subastas legales basándose en la restricción de grilla.
+    Una subasta no puede ser inferior (grilla menor) a una ya emitida.
+    """
+    max_grilla = get_max_grilla_from_auction(auction_history)
+    
+    # Crear nueva máscara legal
+    filtered_mask = legal_mask.copy()
+    
+    for idx, bid in enumerate(bid_tokens):
+        bid_grilla = calculate_grilla(bid)
+        
+        # Si la grilla de la subasta es menor a la máxima, no es legal
+        # Excepción: Pass siempre es legal
+        if bid != "Pass" and bid_grilla < max_grilla:
+            filtered_mask[idx] = False
+    
+    return filtered_mask
+
+# ============================================================================
+# VOCABULARIO SIMPLE
+# ============================================================================
+
+class SimpleVocab:
+    """Vocabulario simple para tokenización."""
+    
+    def __init__(self):
+        self.word2idx = {'<PAD>': 0, '<UNK>': 1}
+        self.idx2word = {0: '<PAD>', 1: '<UNK>'}
+        self.word_counts = Counter()
+        self.next_idx = 2
+    
+    def add_sentence(self, sentence):
+        words = str(sentence).lower().split()
+        self.word_counts.update(words)
+    
+    def build(self, min_count=1):
+        for word, count in self.word_counts.items():
+            if count >= min_count and word not in self.word2idx:
+                self.word2idx[word] = self.next_idx
+                self.idx2word[self.next_idx] = word
+                self.next_idx += 1
+        print(f"📚 Vocabulario construido: {len(self.word2idx)} palabras")
+    
+    def encode(self, sentence):
+        words = str(sentence).lower().split()
+        return [self.word2idx.get(word, 1) for word in words]
+    
+    def __len__(self):
+        return len(self.word2idx)
+
+# ============================================================================
+# CARGA DE DATOS REALES DEL CSV
+# ============================================================================
+
+def load_real_bridge_data(csv_path):
+    """
+    Carga datos REALES del CSV de bridge.
+    
+    Args:
+        csv_path: Ruta al archivo CSV
+    
+    Returns:
+        list: Lista de ejemplos procesados
+    """
+    print(f"\n📂 Cargando datos REALES desde: {csv_path}")
+    
+    try:
+        df = pd.read_csv(csv_path)
+        print(f"   ✓ CSV cargado: {df.shape[0]} filas, {df.shape[1]} columnas")
+    except Exception as e:
+        print(f"   ❌ Error cargando CSV: {e}")
+        return []
+    
+    data = []
+    boards = df['Board'].unique()
+    print(f"   ✓ Procesando {len(boards)} boards...")
+    
+    for board_num in boards:
+        board_data = df[df['Board'] == board_num].copy()
+        
+        # Procesar cada voz en el board
+        auction_history = []
+        
+        for idx, row in board_data.iterrows():
+            jugador = row['Jugador']
+            subasta = str(row['Subasta']).strip()
+            
+            # Validar que la voz esté en nuestro vocabulario
+            if subasta not in BID_TOKENS:
+                # Intentar mapear variaciones comunes
+                if subasta in ['PASS', 'P', 'Pasa']:
+                    subasta = 'Pass'
+                elif subasta in ['DOUBLE', 'Doblo']:
+                    subasta = 'X'
+                elif subasta in ['REDOUBLE', 'Redoblo']:
+                    subasta = 'XX'
+                else:
+                    # Si no es reconocida, saltar
+                    continue
+            
+            # Extraer características de la mano
+            try:
+                # Intentar leer con guión bajo primero, luego con espacio
+                hcp_min_col = 'Min_HCP' if 'Min_HCP' in row.index else 'Min HCP'
+                hcp_max_col = 'Max_HCP' if 'Max_HCP' in row.index else 'Max HCP'
+                hcp_min = int(row[hcp_min_col]) if pd.notna(row[hcp_min_col]) else 0
+                hcp_max = int(row[hcp_max_col]) if pd.notna(row[hcp_max_col]) else 0
+                hcp_avg = (hcp_min + hcp_max) / 2
+                
+                spades_min = int(row['Min_S']) if pd.notna(row['Min_S']) else 0
+                spades_max = int(row['Max_S']) if pd.notna(row['Max_S']) else 0
+                spades_avg = (spades_min + spades_max) / 2
+                
+                hearts_min = int(row['Min_H']) if pd.notna(row['Min_H']) else 0
+                hearts_max = int(row['Max_H']) if pd.notna(row['Max_H']) else 0
+                hearts_avg = (hearts_min + hearts_max) / 2
+                
+                diamonds_min = int(row['Min_D']) if pd.notna(row['Min_D']) else 0
+                diamonds_max = int(row['Max_D']) if pd.notna(row['Max_D']) else 0
+                diamonds_avg = (diamonds_min + diamonds_max) / 2
+                
+                clubs_min = int(row['Min_C']) if pd.notna(row['Min_C']) else 0
+                clubs_max = int(row['Max_C']) if pd.notna(row['Max_C']) else 0
+                clubs_avg = (clubs_min + clubs_max) / 2
+            except (ValueError, TypeError, KeyError):
+                # Si hay error en las características, usar valores por defecto
+                hcp_min = hcp_max = hcp_avg = 0
+                spades_min = spades_max = spades_avg = 0
+                hearts_min = hearts_max = hearts_avg = 0
+                diamonds_min = diamonds_max = diamonds_avg = 0
+                clubs_min = clubs_max = clubs_avg = 0
+            
+            # Extraer campos Grilla y Force
+            try:
+                if 'Grilla' in row.index and pd.notna(row['Grilla']):
+                    grilla = str(row['Grilla']).strip()
+                else:
+                    grilla = ''
+            except (KeyError, AttributeError, TypeError):
+                grilla = ''
+            
+            try:
+                if 'Force' in row.index and pd.notna(row['Force']):
+                    force = str(row['Force']).strip()
+                else:
+                    force = ''
+            except (KeyError, AttributeError, TypeError):
+                force = ''
+            
+            # Crear descripción en lenguaje natural
+            text = f"Jugador {jugador} con {hcp_avg:.1f} puntos promedio. "
+            text += f"Distribución promedio: {spades_avg:.1f} Picas, {hearts_avg:.1f} Corazones, "
+            text += f"{diamonds_avg:.1f} Diamantes, {clubs_avg:.1f} Tréboles. "
+            
+            if auction_history:
+                text += f"Subasta previa: {' - '.join(auction_history)}. "
+            else:
+                text += "Primera voz de la subasta. "
+            
+            # Máscara de legalidad con restricción de grilla
+            legal_mask = np.ones(len(BID_TOKENS), dtype=bool)
+            legal_mask = filter_legal_bids_by_grilla(legal_mask, auction_history, BID_TOKENS)
+            
+            # Agregar ejemplo
+            data.append({
+                'text': text,
+                'legal_mask': legal_mask,
+                'target': BID2IDX[subasta],
+                'target_name': subasta,
+                'jugador': jugador,
+                'board': board_num,
+                'auction': auction_history.copy(),
+                'hcp_min': hcp_min,
+                'hcp_max': hcp_max,
+                'spades_min': spades_min,
+                'spades_max': spades_max,
+                'hearts_min': hearts_min,
+                'hearts_max': hearts_max,
+                'diamonds_min': diamonds_min,
+                'diamonds_max': diamonds_max,
+                'clubs_min': clubs_min,
+                'clubs_max': clubs_max,
+                'grilla': grilla,
+                'force': force,
+            })
+            
+            # Agregar voz al historial
+            auction_history.append(subasta)
+    
+    print(f"   ✓ Datos procesados: {len(data)} ejemplos")
+    
+    # Mostrar distribución de clases
+    class_counts = Counter([item['target_name'] for item in data])
+    print(f"\n   📊 Distribución de clases (top 10):")
+    for bid, count in class_counts.most_common(10):
+        percentage = (count / len(data)) * 100
+        print(f"      {bid:<10}: {count:>4} ({percentage:>5.1f}%)")
+    
+    return data
+
+# ============================================================================
+# BALANCEO DE DATOS
+# ============================================================================
+
+def balance_dataset(data, config):
+    """
+    Balancea el dataset para manejar el desbalanceo extremo de Pass.
+    """
+    print(f"\n🔄 Aplicando balanceo de datos...")
+    
+    # Agrupar por clase
+    class_groups = defaultdict(list)
+    for item in data:
+        class_groups[item['target_name']].append(item)
+    
+    print(f"   Clases originales: {len(class_groups)}")
+    
+    balanced_data = []
+    
+    for bid_name, examples in class_groups.items():
+        original_count = len(examples)
+        
+        if bid_name == "Pass":
+            # Undersample Pass
+            if original_count > config['undersample_pass_to']:
+                sampled = random.sample(examples, config['undersample_pass_to'])
+                balanced_data.extend(sampled)
+                print(f"   📉 {bid_name}: {original_count} → {len(sampled)} (undersample)")
+            else:
+                balanced_data.extend(examples)
+                print(f"   ✓ {bid_name}: {original_count} (sin cambio)")
+        else:
+            # Oversample minoritarias
+            balanced_data.extend(examples)
+            
+            if original_count < config['oversample_minority_to']:
+                needed = config['oversample_minority_to'] - original_count
+                # Replicar ejemplos aleatorios
+                for _ in range(needed):
+                    balanced_data.append(random.choice(examples).copy())
+                print(f"   📈 {bid_name}: {original_count} → {config['oversample_minority_to']} (oversample)")
+            else:
+                print(f"   ✓ {bid_name}: {original_count} (sin cambio)")
+    
+    # Mezclar
+    random.shuffle(balanced_data)
+    
+    print(f"   Dataset original: {len(data)} ejemplos")
+    print(f"   Dataset balanceado: {len(balanced_data)} ejemplos")
+    
+    return balanced_data
+
+# ============================================================================
+# CALCULAR PESOS DE CLASE
+# ============================================================================
+
+def calculate_class_weights(data):
+    """Calcula pesos para cada clase basado en frecuencia inversa."""
+    class_counts = Counter([item['target'] for item in data])
+    total = len(data)
+    num_classes = len(BID_TOKENS)
+    
+    weights = torch.ones(num_classes)
+    
+    for class_idx, count in class_counts.items():
+        if count > 0:
+            weights[class_idx] = total / (num_classes * count)
+    
+    # Normalizar
+    weights = weights / weights.min()
+    
+    print(f"\n⚖️  Pesos de clases calculados (top 10):")
+    sorted_indices = sorted(class_counts.keys(), key=lambda x: weights[x], reverse=True)
+    for idx in sorted_indices[:10]:
+        bid_name = IDX2BID[idx]
+        print(f"   {bid_name:<10}: peso = {weights[idx]:.2f} (count = {class_counts[idx]})")
+    
+    return weights
+
+# ============================================================================
+# FOCAL LOSS
+# ============================================================================
+
+class FocalLoss(nn.Module):
+    def __init__(self, alpha=None, gamma=2.0):
+        super().__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+    
+    def forward(self, inputs, targets):
+        ce_loss = F.cross_entropy(inputs, targets, reduction='none', weight=self.alpha)
+        pt = torch.exp(-ce_loss)
+        focal_loss = ((1 - pt) ** self.gamma) * ce_loss
+        return focal_loss.mean()
+
+# ============================================================================
+# MODELO LSTM
+# ============================================================================
+
+class BridgeLSTMModel(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_layers, 
+                 num_classes, dropout=0.3):
+        super().__init__()
+        
+        self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=0)
+        self.lstm = nn.LSTM(
+            embedding_dim,
+            hidden_dim,
+            num_layers,
+            batch_first=True,
+            bidirectional=True,
+            dropout=dropout if num_layers > 1 else 0
+        )
+        
+        self.dropout = nn.Dropout(dropout)
+        self.fc1 = nn.Linear(hidden_dim * 2, hidden_dim)
+        self.relu = nn.ReLU()
+        
+        # Head para clasificación de voces
+        self.fc_classification = nn.Linear(hidden_dim, num_classes)
+        
+        # Heads para regresión de rangos (10 valores: Min_HCP, Max_HCP, Min_S, Max_S, Min_H, Max_H, Min_D, Max_D, Min_C, Max_C)
+        self.fc_regression = nn.Linear(hidden_dim, 128)
+        self.fc_regression_dropout = nn.Dropout(dropout)
+        
+        # Head para HCP
+        self.fc_hcp_min = nn.Linear(128, 1)
+        self.fc_hcp_max = nn.Linear(128, 1)
+        
+        # Head para Spades
+        self.fc_s_min = nn.Linear(128, 1)
+        self.fc_s_max = nn.Linear(128, 1)
+        
+        # Head para Hearts
+        self.fc_h_min = nn.Linear(128, 1)
+        self.fc_h_max = nn.Linear(128, 1)
+        
+        # Head para Diamonds
+        self.fc_d_min = nn.Linear(128, 1)
+        self.fc_d_max = nn.Linear(128, 1)
+        
+        # Head para Clubs
+        self.fc_c_min = nn.Linear(128, 1)
+        self.fc_c_max = nn.Linear(128, 1)
+        
+    def forward(self, input_ids, lengths, legal_masks):
+        embedded = self.embedding(input_ids)
+        packed = pack_padded_sequence(embedded, lengths.cpu(), batch_first=True, enforce_sorted=False)
+        packed_output, (hidden, cell) = self.lstm(packed)
+        
+        hidden_fwd = hidden[-2]
+        hidden_bwd = hidden[-1]
+        hidden_concat = torch.cat([hidden_fwd, hidden_bwd], dim=1)
+        
+        x = self.dropout(hidden_concat)
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.dropout(x)
+        
+        # Clasificación de voces
+        logits = self.fc_classification(x)
+        logits = logits.masked_fill(~legal_masks, -1e9)
+        
+        # Regresión de rangos
+        reg_features = self.fc_regression(x)
+        reg_features = self.relu(reg_features)
+        reg_features = self.fc_regression_dropout(reg_features)
+        
+        # Predecir todos los rangos
+        hcp_min = self.fc_hcp_min(reg_features).squeeze(-1)
+        hcp_max = self.fc_hcp_max(reg_features).squeeze(-1)
+        s_min = self.fc_s_min(reg_features).squeeze(-1)
+        s_max = self.fc_s_max(reg_features).squeeze(-1)
+        h_min = self.fc_h_min(reg_features).squeeze(-1)
+        h_max = self.fc_h_max(reg_features).squeeze(-1)
+        d_min = self.fc_d_min(reg_features).squeeze(-1)
+        d_max = self.fc_d_max(reg_features).squeeze(-1)
+        c_min = self.fc_c_min(reg_features).squeeze(-1)
+        c_max = self.fc_c_max(reg_features).squeeze(-1)
+        
+        # Aplicar activaciones para asegurar valores razonables
+        # HCP: 0-40, Palos: 0-13
+        hcp_min = torch.clamp(hcp_min, 0, 40)
+        hcp_max = torch.clamp(hcp_max, 0, 40)
+        s_min = torch.clamp(s_min, 0, 13)
+        s_max = torch.clamp(s_max, 0, 13)
+        h_min = torch.clamp(h_min, 0, 13)
+        h_max = torch.clamp(h_max, 0, 13)
+        d_min = torch.clamp(d_min, 0, 13)
+        d_max = torch.clamp(d_max, 0, 13)
+        c_min = torch.clamp(c_min, 0, 13)
+        c_max = torch.clamp(c_max, 0, 13)
+        
+        # Asegurar que min <= max
+        hcp_max = torch.max(hcp_max, hcp_min)
+        s_max = torch.max(s_max, s_min)
+        h_max = torch.max(h_max, h_min)
+        d_max = torch.max(d_max, d_min)
+        c_max = torch.max(c_max, c_min)
+        
+        regression_outputs = {
+            'hcp_min': hcp_min,
+            'hcp_max': hcp_max,
+            's_min': s_min,
+            's_max': s_max,
+            'h_min': h_min,
+            'h_max': h_max,
+            'd_min': d_min,
+            'd_max': d_max,
+            'c_min': c_min,
+            'c_max': c_max
+        }
+        
+        return logits, regression_outputs
+
+# ============================================================================
+# DATASET
+# ============================================================================
+
+class BridgeLSTMDataset(Dataset):
+    def __init__(self, data, vocab):
+        self.data = data
+        self.vocab = vocab
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        item = self.data[idx]
+        tokens = self.vocab.encode(item['text'])
+        
+        return {
+            'tokens': torch.tensor(tokens, dtype=torch.long),
+            'legal_mask': torch.tensor(item['legal_mask'], dtype=torch.bool),
+            'target': torch.tensor(item['target'], dtype=torch.long),
+            'length': len(tokens),
+            # Targets de regresión
+            'hcp_min': torch.tensor(item.get('hcp_min', 0), dtype=torch.float32),
+            'hcp_max': torch.tensor(item.get('hcp_max', 0), dtype=torch.float32),
+            's_min': torch.tensor(item.get('spades_min', 0), dtype=torch.float32),
+            's_max': torch.tensor(item.get('spades_max', 0), dtype=torch.float32),
+            'h_min': torch.tensor(item.get('hearts_min', 0), dtype=torch.float32),
+            'h_max': torch.tensor(item.get('hearts_max', 0), dtype=torch.float32),
+            'd_min': torch.tensor(item.get('diamonds_min', 0), dtype=torch.float32),
+            'd_max': torch.tensor(item.get('diamonds_max', 0), dtype=torch.float32),
+            'c_min': torch.tensor(item.get('clubs_min', 0), dtype=torch.float32),
+            'c_max': torch.tensor(item.get('clubs_max', 0), dtype=torch.float32),
+        }
+
+def collate_fn_lstm(batch):
+    tokens = [item['tokens'] for item in batch]
+    lengths = torch.tensor([item['length'] for item in batch], dtype=torch.long)
+    legal_masks = torch.stack([item['legal_mask'] for item in batch])
+    targets = torch.stack([item['target'] for item in batch])
+    
+    tokens_padded = pad_sequence(tokens, batch_first=True, padding_value=0)
+    
+    # Targets de regresión
+    regression_targets = {
+        'hcp_min': torch.stack([item['hcp_min'] for item in batch]),
+        'hcp_max': torch.stack([item['hcp_max'] for item in batch]),
+        's_min': torch.stack([item['s_min'] for item in batch]),
+        's_max': torch.stack([item['s_max'] for item in batch]),
+        'h_min': torch.stack([item['h_min'] for item in batch]),
+        'h_max': torch.stack([item['h_max'] for item in batch]),
+        'd_min': torch.stack([item['d_min'] for item in batch]),
+        'd_max': torch.stack([item['d_max'] for item in batch]),
+        'c_min': torch.stack([item['c_min'] for item in batch]),
+        'c_max': torch.stack([item['c_max'] for item in batch]),
+    }
+    
+    return {
+        'tokens': tokens_padded,
+        'lengths': lengths,
+        'legal_masks': legal_masks,
+        'targets': targets,
+        'regression_targets': regression_targets
+    }
+
+# ============================================================================
+# ENTRENAMIENTO
+# ============================================================================
+
+def train_model(model, train_loader, val_loader, config, class_weights=None):
+    print(f"\n🚀 Iniciando entrenamiento...")
+    
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=config['learning_rate'],
+        weight_decay=config['weight_decay']
+    )
+    
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='max', factor=0.5, patience=5
+    )
+    
+    if config['use_focal_loss']:
+        if class_weights is not None:
+            class_weights = class_weights.to(device)
+        criterion = FocalLoss(alpha=class_weights, gamma=config['focal_gamma'])
+        print(f"   Usando Focal Loss con gamma={config['focal_gamma']}")
+    else:
+        if class_weights is not None:
+            class_weights = class_weights.to(device)
+            criterion = nn.CrossEntropyLoss(weight=class_weights)
+        else:
+            criterion = nn.CrossEntropyLoss()
+    
+    # Criterio de regresión (MSE Loss)
+    regression_criterion = nn.MSELoss()
+    regression_weight = 0.1  # Peso para balancear pérdida de clasificación vs regresión
+    
+    best_val_acc = 0.0
+    patience_counter = 0
+    history = []
+    
+    for epoch in range(config['num_epochs']):
+        # Training
+        model.train()
+        train_loss = 0.0
+        train_correct = 0
+        train_total = 0
+        
+        for batch in train_loader:
+            tokens = batch['tokens'].to(device)
+            lengths = batch['lengths'].to(device)
+            legal_masks = batch['legal_masks'].to(device)
+            targets = batch['targets'].to(device)
+            regression_targets = {k: v.to(device) for k, v in batch['regression_targets'].items()}
+            
+            optimizer.zero_grad()
+            logits, regression_outputs = model(tokens, lengths, legal_masks)
+            
+            # Pérdida de clasificación
+            classification_loss = criterion(logits, targets)
+            
+            # Pérdida de regresión
+            regression_loss = 0.0
+            for key in regression_targets.keys():
+                regression_loss += regression_criterion(regression_outputs[key], regression_targets[key])
+            regression_loss = regression_loss / len(regression_targets)  # Promedio de todas las pérdidas
+            
+            # Pérdida total
+            loss = classification_loss + regression_weight * regression_loss
+            
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            optimizer.step()
+            
+            train_loss += loss.item()
+            _, predicted = torch.max(logits, 1)
+            train_total += targets.size(0)
+            train_correct += (predicted == targets).sum().item()
+        
+        train_acc = train_correct / train_total
+        avg_train_loss = train_loss / len(train_loader)
+        
+        # Validation
+        model.eval()
+        val_loss = 0.0
+        val_correct = 0
+        val_total = 0
+        
+        with torch.no_grad():
+            for batch in val_loader:
+                tokens = batch['tokens'].to(device)
+                lengths = batch['lengths'].to(device)
+                legal_masks = batch['legal_masks'].to(device)
+                targets = batch['targets'].to(device)
+                regression_targets = {k: v.to(device) for k, v in batch['regression_targets'].items()}
+                
+                logits, regression_outputs = model(tokens, lengths, legal_masks)
+                
+                # Pérdida de clasificación
+                classification_loss = criterion(logits, targets)
+                
+                # Pérdida de regresión
+                regression_loss = 0.0
+                for key in regression_targets.keys():
+                    regression_loss += regression_criterion(regression_outputs[key], regression_targets[key])
+                regression_loss = regression_loss / len(regression_targets)
+                
+                # Pérdida total
+                loss = classification_loss + regression_weight * regression_loss
+                
+                val_loss += loss.item()
+                _, predicted = torch.max(logits, 1)
+                val_total += targets.size(0)
+                val_correct += (predicted == targets).sum().item()
+        
+        val_acc = val_correct / val_total
+        avg_val_loss = val_loss / len(val_loader)
+        
+        # Scheduler
+        scheduler.step(val_acc)
+        
+        # Guardar mejor modelo
+        if val_acc > best_val_acc + config['min_delta']:
+            best_val_acc = val_acc
+            patience_counter = 0
+            torch.save(model.state_dict(), 'best_bridge_real_model.pt')
+            print(f"   💾 Mejor modelo guardado! Val Acc: {val_acc*100:.2f}%")
+        else:
+            patience_counter += 1
+        
+        # Early stopping
+        if patience_counter >= config['patience']:
+            print(f"\n⏹️  Early stopping en época {epoch+1}")
+            break
+        
+        # Log cada 5 épocas
+        if (epoch + 1) % 5 == 0 or epoch == 0:
+            print(f"Época {epoch+1:3d}/{config['num_epochs']} | "
+                  f"Train Loss: {avg_train_loss:.4f} | Train Acc: {train_acc*100:6.2f}% | "
+                  f"Val Loss: {avg_val_loss:.4f} | Val Acc: {val_acc*100:6.2f}%")
+        
+        history.append({
+            'epoch': epoch + 1,
+            'train_loss': avg_train_loss,
+            'train_acc': train_acc,
+            'val_loss': avg_val_loss,
+            'val_acc': val_acc,
+            'lr': optimizer.param_groups[0]['lr']
+        })
+    
+    print(f"\n🎯 Entrenamiento completado. Mejor Val Acc: {best_val_acc*100:.2f}%")
+    return best_val_acc, history
+
+# ============================================================================
+# EVALUACIÓN
+# ============================================================================
+
+def enforce_grilla_constraint(predicted_bid, predicted_idx, probabilities, max_grilla_board, bid_tokens):
+    """
+    Aplica la restricción de grilla dentro de una mano.
+    Si la grilla predicha es menor que la máxima ya emitida en esa mano,
+    busca la siguiente mejor opción válida o fuerza Pass.
+    """
+    grilla_predicha = calculate_grilla(predicted_bid)
+    
+    # Si Pass o la grilla es válida (>= max_grilla_board), retornar la predicción original
+    if predicted_bid == "Pass" or grilla_predicha >= max_grilla_board:
+        return predicted_bid, predicted_idx, grilla_predicha
+    
+    # Si la predicción viola la restricción, buscar la siguiente mejor opción válida
+    # Ordenar probabilidades de mayor a menor
+    sorted_probs = torch.sort(probabilities, descending=True)
+    sorted_indices = sorted_probs.indices[0].cpu().numpy()
+    sorted_values = sorted_probs.values[0].cpu().numpy()
+    
+    # Buscar la primera opción válida
+    for prob_idx, bid_idx in enumerate(sorted_indices):
+        bid = IDX2BID[bid_idx]
+        bid_grilla = calculate_grilla(bid)
+        
+        # Pass siempre es válido
+        if bid == "Pass":
+            return bid, bid_idx, 0
+        
+        # Si la grilla es válida (>= max_grilla_board)
+        if bid_grilla >= max_grilla_board:
+            return bid, bid_idx, bid_grilla
+    
+    # Si no se encuentra ninguna opción válida, forzar Pass
+    pass_idx = BID2IDX["Pass"]
+    return "Pass", pass_idx, 0
+
+def evaluate_model(model, test_data, vocab):
+    print("\n" + "=" * 80)
+    print("🔍 EVALUACIÓN DEL MODELO")
+    print("=" * 80)
+    
+    model.eval()
+    correct = 0
+    total = 0
+    
+    correct_per_class = Counter()
+    total_per_class = Counter()
+    predicted_per_class = Counter()
+    predictions_detail = []
+    
+    # Agrupar datos por board para procesar secuencialmente
+    boards_data = {}
+    for idx, item in enumerate(test_data):
+        board_num = item.get('board', 0)
+        if board_num not in boards_data:
+            boards_data[board_num] = []
+        boards_data[board_num].append((idx, item))
+    
+    # Ordenar boards
+    sorted_boards = sorted(boards_data.keys())
+    
+    # Diccionario para mantener el estado de las grillas predichas por board
+    board_max_grilla = {}  # board_num -> max_grilla_predicha
+    
+    corrections_applied = 0
+    
+    with torch.no_grad():
+        for board_num in sorted_boards:
+            # Inicializar grilla máxima para este board
+            board_max_grilla[board_num] = 0
+            
+            # Procesar cada voz en este board en orden
+            for idx, item in boards_data[board_num]:
+                tokens = torch.tensor(vocab.encode(item['text']), dtype=torch.long).unsqueeze(0).to(device)
+                length = torch.tensor([tokens.size(1)], dtype=torch.long).to(device)
+                
+                # Aplicar filtro de grilla a la máscara legal (basado en historial real)
+                auction_history = item.get('auction', [])
+                legal_mask_original = item['legal_mask'].copy()
+                legal_mask_filtered = filter_legal_bids_by_grilla(
+                    legal_mask_original, auction_history, BID_TOKENS
+                )
+                
+                # También considerar las grillas predichas previas en este board
+                max_grilla_real = get_max_grilla_from_auction(auction_history)
+                max_grilla_board = max(max_grilla_real, board_max_grilla[board_num])
+                
+                # Filtrar máscara legal considerando también predicciones previas
+                for bid_idx, bid in enumerate(BID_TOKENS):
+                    bid_grilla = calculate_grilla(bid)
+                    if bid != "Pass" and bid_grilla < max_grilla_board:
+                        legal_mask_filtered[bid_idx] = False
+                
+                legal_mask = torch.tensor(legal_mask_filtered, dtype=torch.bool).unsqueeze(0).to(device)
+                
+                target = item['target']
+                
+                logits, regression_outputs = model(tokens, length, legal_mask)
+                probabilities = F.softmax(logits, dim=-1)
+                confidence, predicted = torch.max(probabilities, 1)
+                predicted_idx = predicted.item()
+                confidence_value = confidence.item()
+                
+                # Extraer predicciones de regresión
+                pred_hcp_min = regression_outputs['hcp_min'].item()
+                pred_hcp_max = regression_outputs['hcp_max'].item()
+                pred_s_min = regression_outputs['s_min'].item()
+                pred_s_max = regression_outputs['s_max'].item()
+                pred_h_min = regression_outputs['h_min'].item()
+                pred_h_max = regression_outputs['h_max'].item()
+                pred_d_min = regression_outputs['d_min'].item()
+                pred_d_max = regression_outputs['d_max'].item()
+                pred_c_min = regression_outputs['c_min'].item()
+                pred_c_max = regression_outputs['c_max'].item()
+                
+                # Obtener la voz predicha inicial
+                predicted_bid_initial = IDX2BID[predicted_idx]
+                grilla_predicha_initial = calculate_grilla(predicted_bid_initial)
+                
+                # Aplicar restricción de grilla dentro de la mano
+                predicted_bid, predicted_idx_corrected, grilla_predicha = enforce_grilla_constraint(
+                    predicted_bid_initial, predicted_idx, probabilities, max_grilla_board, BID_TOKENS
+                )
+                
+                # Si se aplicó corrección, registrar
+                if predicted_bid != predicted_bid_initial:
+                    corrections_applied += 1
+                
+                # Actualizar grilla máxima del board con la predicción corregida
+                if predicted_bid != "Pass":
+                    board_max_grilla[board_num] = max(board_max_grilla[board_num], grilla_predicha)
+                
+                # Verificar corrección con la predicción final (corregida)
+                is_correct = (predicted_idx_corrected == target)
+                total += 1
+                if is_correct:
+                    correct += 1
+                
+                total_per_class[target] += 1
+                predicted_per_class[predicted_idx_corrected] += 1
+                if is_correct:
+                    correct_per_class[target] += 1
+                
+                predictions_detail.append({
+                    'index': idx + 1,
+                    'board': board_num,
+                    'jugador': item.get('jugador', 'N'),
+                    'auction': auction_history,
+                    'predicted': predicted_bid,
+                    'actual': IDX2BID[target],
+                    'correct': is_correct,
+                    'confidence': confidence_value,
+                    # Valores reales (para referencia)
+                    'hcp_min_real': item.get('hcp_min', 0),
+                    'hcp_max_real': item.get('hcp_max', 0),
+                    'spades_min_real': item.get('spades_min', 0),
+                    'spades_max_real': item.get('spades_max', 0),
+                    'hearts_min_real': item.get('hearts_min', 0),
+                    'hearts_max_real': item.get('hearts_max', 0),
+                    'diamonds_min_real': item.get('diamonds_min', 0),
+                    'diamonds_max_real': item.get('diamonds_max', 0),
+                    'clubs_min_real': item.get('clubs_min', 0),
+                    'clubs_max_real': item.get('clubs_max', 0),
+                    # Predicciones del modelo
+                    'hcp_min': pred_hcp_min,
+                    'hcp_max': pred_hcp_max,
+                    'spades_min': pred_s_min,
+                    'spades_max': pred_s_max,
+                    'hearts_min': pred_h_min,
+                    'hearts_max': pred_h_max,
+                    'diamonds_min': pred_d_min,
+                    'diamonds_max': pred_d_max,
+                    'clubs_min': pred_c_min,
+                    'clubs_max': pred_c_max,
+                    'grilla': item.get('grilla', ''),
+                    'grilla_predicha': grilla_predicha,
+                    'force': item.get('force', ''),
+                })
+    
+    if corrections_applied > 0:
+        print(f"\n⚠️  Correcciones aplicadas por restricción de grilla: {corrections_applied}/{total} ({corrections_applied/total*100:.2f}%)")
+    
+    accuracy = correct / total
+    
+    print(f"\n📊 RESULTADOS GLOBALES:")
+    print(f"   Total evaluado: {total}")
+    print(f"   Correctos: {correct}")
+    print(f"   Accuracy: {accuracy*100:.2f}%")
+    
+    print(f"\n📊 RESULTADOS POR CLASE:")
+    print(f"{'Voz':<10} {'Total':>8} {'Correctas':>10} {'Accuracy':>10} {'Predichas':>10}")
+    print("-" * 80)
+    
+    sorted_classes = sorted(total_per_class.items(), key=lambda x: x[1], reverse=True)
+    
+    for target_idx, count in sorted_classes:
+        bid_name = IDX2BID[target_idx]
+        correct_count = correct_per_class.get(target_idx, 0)
+        predicted_count = predicted_per_class.get(target_idx, 0)
+        class_acc = (correct_count / count * 100) if count > 0 else 0.0
+        
+        if predicted_count == 0:
+            marker = "⚠️ "
+        elif class_acc < 20:
+            marker = "🔴 "
+        elif class_acc < 50:
+            marker = "🟡 "
+        else:
+            marker = "🟢 "
+        
+        print(f"{marker}{bid_name:<8} {count:>8} {correct_count:>10} {class_acc:>9.1f}% {predicted_count:>10}")
+    
+    unique_predictions = len([k for k, v in predicted_per_class.items() if v > 0])
+    print(f"\n📈 El modelo predice {unique_predictions}/{len(total_per_class)} clases diferentes")
+    
+    if unique_predictions == 1:
+        most_predicted = max(predicted_per_class.items(), key=lambda x: x[1])
+        print(f"⚠️  ALERTA: El modelo solo predice '{IDX2BID[most_predicted[0]]}'")
+    elif unique_predictions < len(total_per_class) / 2:
+        print(f"⚠️  ADVERTENCIA: El modelo tiene sesgo hacia pocas clases")
+    else:
+        print(f"✅ Buen balance en las predicciones")
+    
+    return accuracy, predictions_detail
+
+def generate_validation_csv(predictions_detail, output_path):
+    print(f"\n💾 Generando CSV de resultados...")
+    
+    csv_rows = []
+    for pred in predictions_detail:
+        auction = pred.get('auction', [])
+        subasta_previa = ' - '.join(auction) if auction else ''
+        
+        # Reordenar campos según el orden solicitado
+        # Usar las predicciones del modelo, no los valores reales
+        row = {
+            'Board': pred.get('board', 0),
+            'Jugador': pred.get('jugador', 'N'),
+            'Subasta_Real': pred.get('actual', ''),
+            'Subasta_Predicha': pred.get('predicted', ''),
+            'Grilla_Predicha': pred.get('grilla_predicha', 0),
+            # Predicciones del modelo (valores predichos)
+            'Min_HCP': round(pred.get('hcp_min', 0), 2),
+            'Max_HCP': round(pred.get('hcp_max', 0), 2),
+            'Min_S': round(pred.get('spades_min', 0), 2),
+            'Max_S': round(pred.get('spades_max', 0), 2),
+            'Min_H': round(pred.get('hearts_min', 0), 2),
+            'Max_H': round(pred.get('hearts_max', 0), 2),
+            'Min_D': round(pred.get('diamonds_min', 0), 2),
+            'Max_D': round(pred.get('diamonds_max', 0), 2),
+            'Min_C': round(pred.get('clubs_min', 0), 2),
+            'Max_C': round(pred.get('clubs_max', 0), 2),
+            'Grilla': pred.get('grilla', ''),
+            'Force': pred.get('force', ''),
+            'Es_Correcta': 'SI' if pred.get('correct', False) else 'NO',
+            'Confianza': f"{pred.get('confidence', 0.0):.4f}",
+            'Subasta_Previa': subasta_previa
+        }
+        csv_rows.append(row)
+    
+    df_results = pd.DataFrame(csv_rows)
+    df_results.to_csv(output_path, index=False)
+    
+    print(f"✅ CSV guardado en: {output_path}")
+    print(f"   Total registros: {len(csv_rows)}")
+    print(f"   Correctas: {sum(1 for r in csv_rows if r['Es_Correcta'] == 'SI')}")
+    print(f"   Incorrectas: {sum(1 for r in csv_rows if r['Es_Correcta'] == 'NO')}")
+    
+    return df_results
+
+def generate_position_accuracy_csv(predictions_detail, output_path):
+    """
+    Genera un CSV con el análisis de precisión por posición de voz en la subasta.
+    Para cada posición, desglosa las voces con sus cantidades y porcentajes.
+    
+    Args:
+        predictions_detail: Lista de diccionarios con los detalles de predicción
+        output_path: Ruta donde guardar el CSV
+    
+    Returns:
+        DataFrame con los resultados
+    """
+    print(f"\n💾 Generando CSV de análisis por posición de voz...")
+    
+    # Inicializar contadores por posición (hasta 10 voces)
+    position_stats = {i: {'total': 0, 'correct': 0} for i in range(1, 11)}
+    
+    # Estructura para almacenar voces por posición
+    # position_voices[position][voz] = {'total': X, 'correct': Y}
+    position_voices = {i: {} for i in range(1, 11)}
+    
+    # Analizar cada predicción
+    for pred in predictions_detail:
+        auction = pred.get('auction', [])
+        position = len(auction) + 1  # Primera voz = 1, segunda = 2, etc.
+        is_correct = pred.get('correct', False)
+        actual_voice = pred.get('actual', '')  # Voz real
+        
+        # Contar hasta la décima voz
+        if 1 <= position <= 10:
+            position_stats[position]['total'] += 1
+            if is_correct:
+                position_stats[position]['correct'] += 1
+            
+            # Contar voces por posición
+            if actual_voice not in position_voices[position]:
+                position_voices[position][actual_voice] = {'total': 0, 'correct': 0}
+            
+            position_voices[position][actual_voice]['total'] += 1
+            if is_correct:
+                position_voices[position][actual_voice]['correct'] += 1
+    
+    # Crear lista de filas para el CSV
+    csv_rows = []
+    
+    # Primero agregar resumen por posición
+    for position in range(1, 11):
+        total = position_stats[position]['total']
+        correct = position_stats[position]['correct']
+        
+        if total > 0:
+            percentage = (correct / total) * 100
+        else:
+            percentage = 0.0
+        
+        csv_rows.append({
+            'Posicion_Voz': position,
+            'Voz': 'RESUMEN',
+            'Total_Voces': total,
+            'Voces_Correctas': correct,
+            'Voces_Incorrectas': total - correct,
+            'Porcentaje_Acierto': f"{percentage:.2f}%",
+            'Porcentaje_Total_Posicion': '100.00%'
+        })
+        
+        # Agregar desglose por voz en esta posición
+        if position in position_voices and position_voices[position]:
+            # Ordenar voces por cantidad (mayor a menor)
+            sorted_voices = sorted(
+                position_voices[position].items(),
+                key=lambda x: x[1]['total'],
+                reverse=True
+            )
+            
+            for voice, stats in sorted_voices:
+                voice_total = stats['total']
+                voice_correct = stats['correct']
+                voice_incorrect = voice_total - voice_correct
+                
+                # Porcentaje de acierto de esta voz
+                if voice_total > 0:
+                    voice_accuracy = (voice_correct / voice_total) * 100
+                else:
+                    voice_accuracy = 0.0
+                
+                # Porcentaje respecto al total de voces en esta posición
+                if total > 0:
+                    voice_percentage = (voice_total / total) * 100
+                else:
+                    voice_percentage = 0.0
+                
+                csv_rows.append({
+                    'Posicion_Voz': position,
+                    'Voz': voice,
+                    'Total_Voces': voice_total,
+                    'Voces_Correctas': voice_correct,
+                    'Voces_Incorrectas': voice_incorrect,
+                    'Porcentaje_Acierto': f"{voice_accuracy:.2f}%",
+                    'Porcentaje_Total_Posicion': f"{voice_percentage:.2f}%"
+                })
+    
+    # Crear DataFrame y guardar
+    df_position = pd.DataFrame(csv_rows)
+    df_position.to_csv(output_path, index=False)
+    
+    print(f"✅ CSV de posición guardado en: {output_path}")
+    print(f"\n📊 RESUMEN POR POSICIÓN DE VOZ:")
+    print(f"{'Posición':<12} {'Total':<10} {'Correctas':<12} {'Porcentaje':<12}")
+    print("-" * 50)
+    
+    # Mostrar resumen por posición
+    for position in range(1, 11):
+        total = position_stats[position]['total']
+        correct = position_stats[position]['correct']
+        if total > 0:
+            percentage = (correct / total) * 100
+            print(f"{position:<12} {total:<10} {correct:<12} {percentage:.2f}%")
+    
+    return df_position
+
+# ============================================================================
+# MAIN
+# ============================================================================
+
+def main():
+    print("\n" + "=" * 80)
+    print("🎯 BRIDGE BID PREDICTOR - CON DATOS REALES")
+    print("=" * 80)
+    
+    # 1. Cargar datos reales
+    print("\n1️⃣  CARGANDO DATOS REALES")
+    train_data = load_real_bridge_data(CONFIG['train_csv'])
+    test_data = load_real_bridge_data(CONFIG['test_csv'])
+    
+    if not train_data or not test_data:
+        print("❌ Error: No se pudieron cargar los datos")
+        return
+    
+    # 2. Balancear datos
+    print("\n2️⃣  BALANCEANDO DATOS")
+    train_data_balanced = balance_dataset(train_data, CONFIG)
+    
+    # 3. Construir vocabulario
+    print("\n3️⃣  CONSTRUYENDO VOCABULARIO")
+    vocab = SimpleVocab()
+    for item in train_data_balanced:
+        vocab.add_sentence(item['text'])
+    vocab.build(min_count=1)
+    
+    # 4. Calcular pesos de clase
+    class_weights = None
+    if CONFIG['use_class_weights']:
+        class_weights = calculate_class_weights(train_data_balanced)
+    
+    # 5. Split train/val
+    print("\n4️⃣  DIVIDIENDO DATOS")
+    train_split, val_split = train_test_split(train_data_balanced, test_size=0.2, random_state=42)
+    print(f"   Train: {len(train_split)} ejemplos")
+    print(f"   Val: {len(val_split)} ejemplos")
+    print(f"   Test: {len(test_data)} ejemplos")
+    
+    # 6. Crear datasets
+    print("\n5️⃣  CREANDO DATASETS")
+    train_dataset = BridgeLSTMDataset(train_split, vocab)
+    val_dataset = BridgeLSTMDataset(val_split, vocab)
+    
+    train_loader = DataLoader(train_dataset, batch_size=CONFIG['batch_size'], 
+                               shuffle=True, collate_fn=collate_fn_lstm)
+    val_loader = DataLoader(val_dataset, batch_size=CONFIG['batch_size'], 
+                             shuffle=False, collate_fn=collate_fn_lstm)
+    
+    # 7. Crear modelo
+    print("\n6️⃣  CREANDO MODELO")
+    model = BridgeLSTMModel(
+        vocab_size=len(vocab),
+        embedding_dim=CONFIG['embedding_dim'],
+        hidden_dim=CONFIG['hidden_dim'],
+        num_layers=CONFIG['num_layers'],
+        num_classes=len(BID_TOKENS),
+        dropout=CONFIG['dropout']
+    ).to(device)
+    
+    print(f"   Parámetros totales: {sum(p.numel() for p in model.parameters()):,}")
+    
+    # 8. Entrenar
+    print("\n7️⃣  ENTRENAMIENTO")
+    best_acc, history = train_model(model, train_loader, val_loader, CONFIG, class_weights)
+    
+    # 9. Guardar historial
+    with open('bridge_real_history.json', 'w') as f:
+        json.dump(history, f, indent=2)
+    
+    # 10. Evaluar
+    print("\n8️⃣  EVALUACIÓN FINAL")
+    model.load_state_dict(torch.load('best_bridge_real_model.pt'))
+    test_accuracy, predictions_detail = evaluate_model(model, test_data, vocab)
+    
+    # 11. Generar CSV
+    print("\n9️⃣  GENERANDO CSV DE VALIDACIÓN")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    csv_output_path = f'result_validac_bridge_REAL_{timestamp}.csv'
+    df_validation = generate_validation_csv(predictions_detail, csv_output_path)
+    
+    # 12. Generar CSV de análisis por posición
+    print("\n🔟 GENERANDO CSV DE ANÁLISIS POR POSICIÓN")
+    csv_position_path = f'result_posicion_voz_{timestamp}.csv'
+    df_position = generate_position_accuracy_csv(predictions_detail, csv_position_path)
+    
+    print("\n" + "=" * 80)
+    print("✅ PROCESO COMPLETADO")
+    print("=" * 80)
+    print(f"📈 Mejor accuracy en validación: {best_acc*100:.2f}%")
+    print(f"📈 Accuracy en test: {test_accuracy*100:.2f}%")
+    print(f"\n💾 ARCHIVOS GENERADOS:")
+    print(f"   • best_bridge_real_model.pt")
+    print(f"   • bridge_real_history.json")
+    print(f"   • {csv_output_path}")
+    print(f"   • {csv_position_path}")
+    print("=" * 80)
+
+if __name__ == "__main__":
+    main()
+

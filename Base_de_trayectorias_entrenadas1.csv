@@ -1,0 +1,539 @@
+import random
+import pandas as pd
+import hands
+import CalcAllTables
+import functions
+import sys 
+import numpy as np
+import time
+import os
+import modelo
+
+
+class Main:
+    # Constantes para las cartas
+    SUITS = ['S', 'H', 'D', 'C']
+    VALUES = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
+    RANKS = "23456789TJQKA"
+
+    def __init__(self):
+        self.mostrar_bienvenida()
+                # Crear baraja como lista de strings: '2S', '3S', ..., 'AS', '2H', ..., 'AC'
+        self.cartas = np.array([rank + suit for suit in self.SUITS for rank in self.RANKS]) 
+    
+    def mostrar_bienvenida(self):
+        print("""
+        ******************************************
+        *    ¡Bienvenido a Manos Aleatorias!     *
+        *    Sistema de análisis de manos        *
+        *    de bridge                           *
+        *                                        *
+        ******************************************
+        """)
+
+    def Consultar_Manos_Base(self, board):
+        """Lee el archivo CSV Base_1 100 milColumnas.csv y retorna un arreglo con la información"""
+        try:
+            # Leer el archivo CSV en chunks y filtrar por el board específico
+            columnas_requeridas = ['Board', 'Declarer', 'Dealer', 'Vul', 'OH-Ss', 'OH-Hs', 'OH-Ds', 'OH-Cs']
+            registros_board = []          
+            # Leer el CSV en chunks para manejar grandes volúmenes de datos
+            for chunk in pd.read_csv('Base_1 100 milColumnas.csv', 
+                                   usecols=columnas_requeridas,
+                                   chunksize=10000,
+                                   sep=';',
+                                   encoding='iso-8859-1'):
+                # Filtrar el chunk por el board específico
+                chunk_filtrado = chunk[chunk['Board'] == board]
+                if not chunk_filtrado.empty:
+                    # Convertir el chunk a registros y manejar el caso de Vul NaN
+                    registros = chunk_filtrado.to_dict('records')
+                    for registro in registros:
+                        if pd.isna(registro['Vul']):
+                            registro['Vul'] = 'Ninguno'
+                    registros_board.extend(registros)
+
+                # Si ya encontramos los 4 registros del board, podemos detener la lectura
+                if len(registros_board) >= 4:
+                    break
+            
+            # Procesar las cartas DESPUÉS de tener todos los registros del board
+            if registros_board:
+                # Mapeo de palos
+                mapeo_palos = {
+                    'OH-Ss': 'S',
+                    'OH-Hs': 'H',
+                    'OH-Ds': 'D',
+                    'OH-Cs': 'C'
+                }
+                
+                # Mapeo de valores para convertir a formato correcto
+                mapeo_valores = {
+                    'k': 'K',
+                    't': 'T',
+                    'a': 'A',
+                    'j': 'J',
+                    'q': 'Q'
+                }
+                
+                # Procesar cada registro para transformar las cartas
+                for registro in registros_board:
+                    # Procesar las cartas para este registro específico
+                    mano_jugador = []
+                    for columna_palo, palo in mapeo_palos.items():
+                        cartas_palo = registro[columna_palo]
+                        # Convertir cada carta al formato correcto
+                    #  Manejo de palos vacíos o NaN
+                        if pd.isna(cartas_palo) or cartas_palo in [None, '', float('nan')]:
+                            cartas_palo = ""  # sin cartas, sin drama
+
+                        # Convertir cartas individualmente
+                        for carta in str(cartas_palo):
+                            valor = mapeo_valores.get(carta.lower(), carta.upper())
+                            mano_jugador.append(f"{valor}{palo}")
+                    
+                    # Asignar solo las cartas de este registro
+                    registro['cartas_jugador'] = mano_jugador
+
+            # Ordenar los registros según el orden N, E, S, W
+            orden_jugadores = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
+            registros_board.sort(key=lambda x: orden_jugadores[x['Declarer']])
+            
+            print(f"Board {board}: {len(registros_board)} registros encontrados")
+            for reg in registros_board:
+                print(f"  - {reg['Declarer']}: {len(reg['cartas_jugador'])} cartas")
+            
+            return registros_board
+            
+        except Exception as e:
+            print(f"Error al leer el archivo CSV: {str(e)}")
+            return []
+
+    def Generar_Manos_Inicial(self, num_manos=2):
+        """Genera las manos para los jugadores N, E, S, W sin repetir cartas
+        Args:
+            num_manos (int): Número de manos a generar
+        Returns:
+            list: Lista de diccionarios con las manos generadas"""
+        todas_las_manos = []
+        RANKS = "23456789TJQKA"
+        
+        # Crear la baraja completa
+        baraja_completa = np.array([rank + suit for rank in RANKS for suit in self.SUITS])
+        
+        # Inicializar el generador de números aleatorios de numpy
+        rng = np.random.default_rng()
+        
+        for i in range(num_manos):
+            # Mezclar la baraja usando numpy
+            baraja_mezclada = rng.permutation(baraja_completa)
+            
+            # Inicializar el diccionario de manos
+            hands = {
+                'N': [],
+                'E': [],
+                'S': [],
+                'W': []
+            }
+            
+            # Asignar cartas a los jugadores
+            cartas_por_jugador = 13
+            cartas_asignadas = 0
+            
+            for player in ['N', 'E', 'S', 'W']:
+                # Obtener las cartas para el jugador actual
+                cartas_jugador = baraja_mezclada[cartas_asignadas:cartas_asignadas + cartas_por_jugador]
+                # Ordenar las cartas por palo y rango
+                hands[player] = sorted(cartas_jugador, key=lambda x: (self.SUITS.index(x[1]), RANKS.index(x[0])))
+                cartas_asignadas += cartas_por_jugador
+            
+            # Verificar que esta mano no sea igual a ninguna anterior
+            es_repetida = False
+            for mano_anterior in todas_las_manos:
+                if (set(hands['N']) == set(mano_anterior['N']) and
+                    set(hands['E']) == set(mano_anterior['E']) and
+                    set(hands['S']) == set(mano_anterior['S']) and
+                    set(hands['W']) == set(mano_anterior['W'])):
+                    es_repetida = True
+                    break
+            
+            if es_repetida:
+                # Si la mano está repetida, volvemos a intentar con esta misma iteración
+                i -= 1
+                continue
+            
+            # Si la mano es única, la agregamos
+            todas_las_manos.append({
+                'Tablero': i + 1,
+                'N': hands['N'],
+                'E': hands['E'],
+                'S': hands['S'],
+                'W': hands['W']
+            })
+            
+            # Pequeño retraso para asegurar que el generador de números aleatorios cambie
+            time.sleep(0.01)
+        
+        return todas_las_manos
+
+    def Consultar_Grupo_Jugador(self, numero_mano, jugador):
+        """
+        Consulta el grupo y vulnerabilidad del jugador para un número de mano específico.
+        Args:
+            numero_mano (int): Número de la mano a consultar
+            jugador (str): Identificador del jugador (N, E, S, W)
+        Returns:
+            tuple: (es_vulnerable, declarante) donde:
+                - es_vulnerable (bool): Indica si el jugador está vulnerable
+                - declarante (str): Identificador del declarante
+        """
+        # Determinar el grupo del jugador
+        if jugador in ['N', 'S']:
+            grupo = 'NS'
+        else:
+            grupo = 'EW'
+        
+        # Determinar si el grupo está vulnerable y 
+        es_vulnerable, declarante = functions.Consultar_Vulnerabilidad_Declarante(numero_mano, grupo)
+        
+        return es_vulnerable, declarante
+
+#Guarda la información de la trayectoria
+    def Guardar_Datos_Subasta_Pass(self, board,jugador,valoresTrayectoriaEntrenada):
+        # Verificar si se encontraron valores de trayectoria entrenada
+        if valoresTrayectoriaEntrenada is None or valoresTrayectoriaEntrenada.empty:
+            print(f"No se pudieron obtener datos de trayectoria para Tablero={board}, Jugador={jugador}")
+            # Retornar DataFrame vacío o con valores por defecto
+            return pd.DataFrame()
+        
+        # Suponiendo que valoresTrayectoriaEntrenada es un DataFrame con una sola fila de datos HCP
+        fila_hcp = valoresTrayectoriaEntrenada.iloc[0]
+        datos_subasta = {
+            'Tablero': board,
+            'Jugador': jugador,
+            'Subasta': 'Pass',
+            'Grilla': 0,
+            'Desc_o_Pre': '',
+            'Force': 'No',
+            'Alert': 'No',
+            'Conv': '',
+            'Min_HCP': int(fila_hcp['Min_HCP']),
+            'Max_HCP': int(fila_hcp['Max_HCP']),
+            'Min_S': int(fila_hcp['Min_S']),
+            'Max_S': int(fila_hcp['Max_S']),
+            'Min_H': int(fila_hcp['Min_H']),
+            'Max_H': int(fila_hcp['Max_H']),
+            'Min_D': int(fila_hcp['Min_D']),
+            'Max_D': int(fila_hcp['Max_D']),
+            'Min_C': int(fila_hcp['Min_C']),
+            'Max_C': int(fila_hcp['Max_C'])
+        }
+
+        # Leer si ya existe el archivo
+        if os.path.exists('trayectoria_subasta.csv'):
+            dfTrayectoria = pd.read_csv('trayectoria_subasta.csv', sep=';')
+        else:
+            dfTrayectoria = pd.DataFrame()
+
+        # Agregar nuevo registro
+        dfTrayectoria = pd.concat([dfTrayectoria, pd.DataFrame([datos_subasta])], ignore_index=True)
+
+        # Guardar
+        dfTrayectoria.to_csv('trayectoria_subasta.csv', sep=';', index=False)
+        return dfTrayectoria[dfTrayectoria['Tablero'] == board]
+
+
+
+#Guarda la información de la trayectoria
+    def Guardar_Datos_Subasta(self, board,jugador,valoresTrayectoriaEntrenada):
+        # Verificar si se encontraron valores de trayectoria entrenada
+        if valoresTrayectoriaEntrenada is None:
+            print(f"No se pudieron obtener datos de trayectoria para Tablero={board}, Jugador={jugador}")
+            # Retornar DataFrame vacío o con valores por defecto
+            return pd.DataFrame()
+        
+        # Suponiendo que valoresTrayectoriaEntrenada es un diccionario
+        datos_subasta = {
+            'Tablero': board,
+            'Jugador': jugador,
+            'Subasta': valoresTrayectoriaEntrenada[2],
+            'Grilla': int(valoresTrayectoriaEntrenada[3]),
+            'Desc_o_Pre': valoresTrayectoriaEntrenada[4],
+            'Force': valoresTrayectoriaEntrenada[5],
+            'Alert': valoresTrayectoriaEntrenada[6],
+            'Conv': valoresTrayectoriaEntrenada[7],
+            'Min_HCP': int(valoresTrayectoriaEntrenada[8]),
+            'Max_HCP': int(valoresTrayectoriaEntrenada[9]),
+            'Min_S': int(valoresTrayectoriaEntrenada[10]),
+            'Max_S': int(valoresTrayectoriaEntrenada[11]),
+            'Min_H': int(valoresTrayectoriaEntrenada[12]),
+            'Max_H': int(valoresTrayectoriaEntrenada[13]),
+            'Min_D': int(valoresTrayectoriaEntrenada[14]),
+            'Max_D': int(valoresTrayectoriaEntrenada[15]),
+            'Min_C': int(valoresTrayectoriaEntrenada[16]),
+            'Max_C': int(valoresTrayectoriaEntrenada[17])
+        }
+
+        # Leer si ya existe el archivo
+        if os.path.exists('trayectoria_subasta.csv'):
+            dfTrayectoria = pd.read_csv('trayectoria_subasta.csv', sep=';')
+        else:
+            dfTrayectoria = pd.DataFrame()
+
+        # Agregar nuevo registro
+        dfTrayectoria = pd.concat([dfTrayectoria, pd.DataFrame([datos_subasta])], ignore_index=True)
+
+        # Guardar
+        dfTrayectoria.to_csv('trayectoria_subasta.csv', sep=';', index=False)
+        return dfTrayectoria[dfTrayectoria['Tablero'] == board]
+
+
+#Consulta la información del archivo de TrayectoriaEntrenada, ya que se usa de manera provicional
+    def Consultar_Datos_TrayectoriaEntrenada(self, board,manoIncremenal, jugador):
+        # Leer el archivo CSV en chunks y filtrar por el board específico
+        columnas_requeridas = ['Board','Jugador','Subasta','Grilla','Desc_o_Preg','Force','Alert','Conv','Min HCP','Max HCP','S_min','S_max','H_min','H_max','D_min','D_max','C_min','C_max']	
+        # Leer el CSV en chunks para manejar grandes volúmenes de datos
+               # Cargar solo las columnas necesarias
+        df = pd.read_csv(
+            'TrayectoriaEntrenada.csv',
+            usecols=columnas_requeridas,
+            sep=';',
+            encoding='iso-8859-1'
+        )
+        # Filtrar por Board y Jugador para obtener el primer registro que coincida
+        filtro = (df['Board'] == board) 
+        registros_filtrados = df[filtro]
+        
+        if registros_filtrados.empty:
+            return None   
+
+          # Elegir la fila correspondiente a pruebaMano
+        fila = registros_filtrados.iloc[manoIncremenal]
+
+        return fila.tolist()
+
+    def Consultar_HCP_Jugador(self, board, jugador):
+        # Leer el archivo CSV en chunks y filtrar por el board específico
+        columnas_requeridas = ['Tablero','Jugador','Max_HCP_Total','Min_HCP_Total','Max_HCP_S','Min_HCP_S','Max_HCP_H','Min_HCP_H','Max_HCP_D','Min_HCP_D','Max_HCP_C','Min_HCP_C']
+        try:
+            df = pd.read_csv(
+                'Resumen_HCP_Tablero.csv',
+                usecols=columnas_requeridas,
+                sep=',',
+                encoding='utf-8-sig'
+            )  
+            filtro = (df['Tablero'] == board) & (df['Jugador'] == jugador)
+            registros_filtrados = df[filtro]  
+        except (FileNotFoundError, pd.errors.EmptyDataError, KeyError):
+            registros_filtrados = pd.DataFrame()
+        
+        if not registros_filtrados.empty:
+            #obtener el ultimo registro 
+            fila = registros_filtrados.iloc[-1]
+            datos_subasta = {
+            'Tablero': board,
+            'Jugador': jugador,
+            'Subasta': 'Pass',
+            'Grilla': 0,
+            'Desc_o_Pre': '',
+            'Force': 'No',
+            'Alert': 'No',
+            'Conv': '',
+            'Min_HCP': fila['Min_HCP_Total'],
+            'Max_HCP': fila['Max_HCP_Total'],
+            'Min_S': fila['Min_HCP_S'],
+            'Max_S': fila['Max_HCP_S'],
+            'Min_H': fila['Min_HCP_H'],
+            'Max_H': fila['Max_HCP_H'],
+            'Min_D': fila['Min_HCP_D'],
+            'Max_D': fila['Max_HCP_D'],
+            'Min_C': fila['Min_HCP_C'],
+            'Max_C': fila['Max_HCP_C']
+        }
+            df_salida = pd.DataFrame([datos_subasta])
+            return df_salida
+        else:
+            return pd.DataFrame()         
+
+
+if __name__ == "__main__":
+    main = Main()
+    num_manos_a_consultar = 500   # Número de manos a consultar se parametriza hasta que se quiera que finalice
+    mano_actual = 1  # Iniciar con el board 1
+    mano_actual_ajustada = 1 
+    board=1
+    board_actual=0
+    debe_subastar = ""
+    subasta = ""
+    grilla = 0
+    incManoIteracion=0
+    orden_jugadores = ['N', 'E', 'S', 'W']
+    dfTrayectoria = pd.DataFrame(columns=['Tablero', 'Jugador', 'Subasta', 'Grilla', 'Desc_o_Pre', 'Force', 'Alert', 'Conv', 
+                                      'Min_HCPs', 'Max_HCPs', 'Min_S', 'Max_S', 'Min_H', 'Max_H', 
+                                      'Min_D', 'Max_D', 'Min_C', 'Max_C'])
+    #borrar los datos del archivo trayectoria_subasta.csv
+    if os.path.exists('trayectoria_subasta.csv'):
+        with open('trayectoria_subasta.csv', 'r') as file:
+            first_line = file.readline()
+        with open('trayectoria_subasta.csv', 'w') as file:
+            file.write(first_line)
+
+    while board <= num_manos_a_consultar:
+        print(f"\n=== Consultando Mano {mano_actual} ===")
+        
+        if board != board_actual:
+            # Consultar la información del board actual
+            manos_base = main.Consultar_Manos_Base(board)
+            board_actual = board
+        
+        if manos_base:
+            print(f"Encontrados {len(manos_base)} registros para board {mano_actual}")
+            
+            for indice_jugador, mano in enumerate(manos_base):
+                incManoIteracion+=1
+                subasta=''
+                #obtener de manos_base solo la variable manos 
+                cartas_jugador = mano['cartas_jugador']
+                
+                #obter de manos_base el dealer
+                dealer = mano['Dealer']
+                
+                #obtener de manos_base Vul
+                vul = mano['Vul']
+
+                board = mano['Board']
+                
+                #obtener el jugador del Declarer
+                jugador = mano['Declarer']
+                
+                print(f"\n=== Board {board}, Mano {mano_actual}, Jugador {jugador} (índice {indice_jugador}) ===")
+                print(f"Cartas del jugador: {cartas_jugador}")
+                
+                #consultar en mano la variable Vul 
+                vul = mano['Vul']  
+                #mapear vulnerabilidad  recordar que en store se busca vul y no vul
+                cartas_jugador = mano['cartas_jugador']  # Obtener las cartas del jugador
+                #Mostrar solo los registros de la trayectoria correspondientes al board actual
+                df_trayectoria_board = dfTrayectoria[dfTrayectoria['Tablero'] == board]
+                print(f"Trayectoria: {dfTrayectoria}")
+
+                hands.Calcular_HCP_JugadorFijo(board,cartas_jugador,jugador )
+                #si la trayectoria no esta vacia realiza la validacion
+                if not df_trayectoria_board.empty:
+                    debe_subastar = functions.ValidarCondicionesNoEvaluar(jugador, df_trayectoria_board)
+                    print(f"Debe subastar: {debe_subastar}")
+                    if debe_subastar == "SI":
+                        subasta = 'Voz'
+                    else: 
+                        subasta = 'Evaluar'
+                        print(f"Evaluando mano {mano_actual}, Jugador {jugador}")
+
+                if subasta != "Voz":   
+                    hands.Generar_Manos_Aleatorias(mano['Board'], jugador, cartas_jugador, mano_actual, df_trayectoria_board)
+                    apuesta= 0  
+                    df_valor_esperado = CalcAllTables.GenerarManosCalculos(apuesta, jugador, vul, mano['Declarer'], mano_actual)
+
+                    debe_subastar = functions.DefinirSiSubastar(jugador,df_trayectoria_board,df_valor_esperado,apuesta)
+                    print(f"Debe subastar: {debe_subastar}")
+                    if debe_subastar == "NO":
+                        subasta = 'Pass'
+                    elif debe_subastar == "OPCIONAL":
+                        subasta = 'Voz'
+                    elif debe_subastar == "EVALUAR":
+                        subasta = 'Voz'
+                    else:
+                        subasta = 'Voz'
+                    print(f"Subasta: {subasta}")
+
+                df_HCP_jugador = hands.Calcular_HCP_JugadorFijo(board, cartas_jugador, jugador)
+                
+                # Renombrar las columnas para que coincidan con las esperadas por el modelo
+                df_HCP_jugador = df_HCP_jugador.rename(columns={
+                    'Min_HCP_Total': 'Min_HCP',
+                    'Max_HCP_Total': 'Max_HCP',
+                    'Min_HCP_S': 'Min_S',
+                    'Max_HCP_S': 'Max_S',
+                    'Min_HCP_H': 'Min_H',
+                    'Max_HCP_H': 'Max_H',
+                    'Min_HCP_D': 'Min_D',
+                    'Max_HCP_D': 'Max_D',
+                    'Min_HCP_C': 'Min_C',
+                    'Max_HCP_C': 'Max_C'
+                })
+                print(f"HCP jugador: {df_HCP_jugador}")
+                print(f"Subasta?: {subasta}")
+
+                if (subasta =='Pass'):
+                    dfTrayectoria=main.Guardar_Datos_Subasta_Pass(board,jugador,df_HCP_jugador)
+                else:
+                    valoresTrayectoriaEntrenada = modelo.ejecutar_modelo(df_HCP_jugador, df_trayectoria_board)
+                    print(f"ValoresTrayectoriaEntrenada: {valoresTrayectoriaEntrenada}")
+                    print(f"Grilla Maxima: {df_trayectoria_board['Grilla'].max()}")
+                    dfTrayectoria=main.Guardar_Datos_Subasta(board,jugador,valoresTrayectoriaEntrenada)
+
+
+         
+                print(f"\n=== Fin Jugador {jugador} ===")
+
+                # 1. FILTRAR Y VALIDAR CONTEO DE REGISTROS POR BOARD
+                df_tablero_actual = dfTrayectoria[dfTrayectoria['Tablero'] == board]
+
+                if len(df_tablero_actual) < 4:
+                    # Manejar caso de subasta incompleta o menos de 4 registros (lo que impide 3 Passes)
+                    # Para este ajuste, asumiremos que si no hay 4, no podemos evaluar la condición.
+                    ultimos_subastas = []
+                else:
+                    # 2. OBTENER LOS ÚLTIMOS 3 REGISTROS (si hay 4 o más)
+                    ultimos_subastas = df_tablero_actual.tail(4)['Subasta'].tolist()
+                    ultimos3_subastas = df_tablero_actual.tail(3)['Subasta'].tolist()
+                    print(ultimos_subastas)
+
+                    # 3. VALIDAR 3 PASSES Y AVANZAR AL SIGUIENTE BOARD
+                    # Se verifica que haya exactamente 3 subastas y que todas sean 'Pass'
+                    if len(ultimos_subastas) >= 3 and all(sub == 'Pass' for sub in ultimos3_subastas):
+                        print(">>> Las últimas 3 subastas son PASS. Se debe avanzar al siguiente board.")
+                        incManoIteracion= 0
+                        if board < num_manos_a_consultar:
+                            board += 1
+                            mano_actual = 1
+                            board_actual = 0  # Reiniciar el índice de subasta si aplica
+                            # Si este código está dentro de un bucle, el 'break' es correcto para salir del bucle interno
+                            # Si no está en un bucle, el break lanzará un SyntaxError. Lo mantenemos bajo el supuesto de bucle.
+                            break
+                        else:
+                            print("\n=== Fin del programa ===")
+                            sys.exit(0)
+
+                # Verificar si es el último jugador del board actual
+                if indice_jugador == 3:  # Último jugador (índice 3 = 4to jugador)
+                    if all(sub == 'Pass' for sub in ultimos_subastas):
+                        # Todas las subastas fueron "Pass", avanzar al siguiente board
+                        if board < num_manos_a_consultar:
+                            print(f"Terminado board {mano_actual}, pasando al siguiente board")
+                            board+=1
+                            mano_actual=1
+
+                            break  # Salir del bucle de jugadores para pasar al siguiente board
+                        else:
+                            print("\n=== Fin del programa ===")
+                            sys.exit(0)
+                    else:
+                        # Al menos una subasta no fue "Pass", repetir el mismo board sin cambiar manos_base
+                        mano_actual_ajustada = mano_actual + 1
+                        mano_actual+=1
+                        board_actual=board
+
+                        print(f"\nSubasta válida detectada. Repitiendo el board pero con la mano  {mano_actual} con las mismas manos_base")
+                        break  # Salir del bucle de jugadores para reiniciar con las mismas manos_base
+
+            
+            # Si llegamos aquí y no hemos salido del bucle, significa que no hay más boards
+            if board > num_manos_a_consultar:
+                print("\n=== Fin del programa ===")
+                sys.exit(0)
+            
+        else:
+            print(f"No se encontró información para el board {mano_actual}")
+
+    print(f"\n=== Fin Análisis ===")
+    sys.exit(0)  # Termina el programa completamente

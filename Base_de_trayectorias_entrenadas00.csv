@@ -1,0 +1,1111 @@
+import random
+import pandas as pd
+from collections import defaultdict
+import pulp
+import os
+
+
+
+# Constantes globales
+SPADES = 0
+HEARTS = 1
+DIAMONDS = 2
+CLUBS = 3
+NOTRUMP = 4
+
+NORTH = 0
+EAST = 1
+SOUTH = 2
+WEST = 3
+
+suit_map = {
+                'S': 'Sp',
+                'H': 'Hs',
+                'D': 'Ds',
+                'C': 'Cs'
+ }
+
+# Definición de valores hexadecimales para cada carta
+RANKSHX = {
+    '2': 0x0004, '3': 0x0008, '4': 0x0010, '5': 0x0020,
+    '6': 0x0040, '7': 0x0080, '8': 0x0100, '9': 0x0200,
+    'T': 0x0400, 'J': 0x0800, 'Q': 0x1000, 'K': 0x2000, 'A': 0x4000
+}
+
+SUITS = ['S', 'H', 'D', 'C']
+VALUES = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
+RANKS = "23456789TJQKA"
+DECK = [v + s for s in SUITS for v in VALUES]
+# Definir el número de tableros máximo 40
+noOfTables = 25
+
+# Crear estructura DDtable con la cantidad adecuada de tableros
+DDtable = [[0] * 20 for _ in range(noOfTables)]
+
+# Variable global para almacenar las manos PBN
+PBN = []
+
+
+# Recibe y muestra la información de un jugador específico y genera las manos aleatorias para cada tablero
+def Generar_Manos_Aleatorias(tablero_base, jugador, cartas,mano_actual,dfTrayectoria):
+    global PBN
+    PBN = []
+    DDtable = []
+    holdings = []
+    DDtable = [[0] * 20 for _ in range(noOfTables)]
+
+
+    guardarHcpJugadorFijo(tablero_base, cartas, jugador);
+        # Generar manos diferentes para cada tablero usando el índice i como semilla
+    for i in range(noOfTables):
+        semilla = tablero_base + i  # tablero_base puede ser 1000, 2000, etc. para trazabilidad
+        PBN.append(generate_unique_hand_ManoN(i, jugador, cartas, dfTrayectoria, mano_actual, semilla))
+
+    holdings = convert_pbn_to_holdings(PBN)
+    
+    from CalcAllTables import Generar_Manos_ManoN
+    Generar_Manos_ManoN(holdings)
+    
+    return PBN, DDtable, holdings, mano_actual
+
+#Convierte las manos generadas en formato PBN
+def hands_to_pbn(hands):
+    def format_hand(hand):
+        suits = {suit: [] for suit in SUITS}
+        for card in hand:
+            rank, suit = card[0], card[1]  # Separar el valor del palo
+            suits[suit].append(rank)
+
+        # Ordenar las cartas en cada palo de mayor a menor según RANKS
+        return ".".join("".join(sorted(suits[suit], key=RANKS.index, reverse=True)) for suit in SUITS)
+    
+    return f"N:{format_hand(hands['N'])} {format_hand(hands['E'])} {format_hand(hands['S'])} {format_hand(hands['W'])}"
+
+def is_valid_hand(hand):
+    if len(hand) != 13:
+        return False
+    if len(set(hand)) != len(hand):
+        return False
+    return True
+
+def check_suit_constraints(hand, player, ultimos_registros, columna_jugador):
+    if not is_valid_hand(hand):
+        return False
+
+    # Verificar si el jugador está en los últimos registros
+    jugador_registros = ultimos_registros[ultimos_registros[columna_jugador] == player]
+    if jugador_registros.empty:
+        return True  # Si no hay restricciones, retornar True
+        
+    # Obtener las restricciones del último registro del jugador
+    ultimo_registro = jugador_registros.iloc[-1]
+    
+    suits = {'S': 0, 'H': 0, 'D': 0, 'C': 0}
+    for card in hand:
+        suits[card[1]] += 1
+    
+    for suit in ['S', 'H', 'D', 'C']:
+        columna = suit_map[suit]  # Traducir 'S' → 'Sp', etc.
+        min_cards = int(ultimo_registro[f'Min_{columna}'])
+        max_cards = int(ultimo_registro[f'Max_{columna}'])
+        if not (min_cards <= suits[suit] <= max_cards):
+            return False
+    return True
+
+def generate_valid_hand(available_cards, player, ultimos_registros, columna_jugador):
+    # Verificar si el jugador está en los últimos registros
+    jugador_registros = ultimos_registros[ultimos_registros[columna_jugador] == player]
+
+    if jugador_registros.empty:
+        # Si no hay restricciones, generar mano aleatoria simple
+        while True:
+            random.shuffle(available_cards)
+            hand = available_cards[:13]
+            if is_valid_hand(hand):
+                return hand, available_cards[13:]
+
+    # Obtener las restricciones del último registro del jugador
+    ultimo_registro = jugador_registros.iloc[-1]
+    min_points = int(ultimo_registro['Min_HCP'])
+    max_points = int(ultimo_registro['Max_HCP'])
+
+    max_attempts = 1000
+    attempts = 0
+
+    while attempts < max_attempts:
+        random.shuffle(available_cards)
+        hand = available_cards[:13]
+        remaining_cards = available_cards[13:]
+
+        if not is_valid_hand(hand):
+            attempts += 1
+            continue
+
+        hcp = calculate_hcp(hand)
+
+        if check_suit_constraints(hand, player, ultimos_registros, columna_jugador) and min_points <= hcp <= max_points:
+            return hand, remaining_cards
+
+        attempts += 1
+
+    # Si no se pudo generar una mano válida, intentar con una distribución más flexible
+    while True:
+        random.shuffle(available_cards)
+        hand = available_cards[:13]
+        remaining_cards = available_cards[13:]
+
+        if not is_valid_hand(hand):
+            continue
+
+        # Ajustar la mano para cumplir con los mínimos de palos
+        if not jugador_registros.empty:
+            ultimo_registro = jugador_registros.iloc[-1]
+            for suit in ['S', 'H', 'D', 'C']:
+                columna = suit_map[suit]
+                min_cards = int(ultimo_registro[f'Min_{columna}'])
+                current_suit_cards = sum(1 for card in hand if card[1] == suit)
+
+                if current_suit_cards < min_cards:
+                    suit_cards = [card for card in remaining_cards if card[1] == suit]
+                    if suit_cards:
+                        # Remover cartas del palo actual
+                        hand = [card for card in hand if card[1] != suit]
+                        # Agregar las nuevas cartas
+                        new_cards = suit_cards[:min_cards]
+                        hand.extend(new_cards)
+                        # Actualizar cartas restantes
+                        remaining_cards = [card for card in remaining_cards if card not in new_cards]
+                        # Completar la mano hasta 13 cartas
+                        while len(hand) < 13 and remaining_cards:
+                            hand.append(remaining_cards.pop(0))
+
+        if is_valid_hand(hand):
+            return hand, remaining_cards
+
+
+def generate_unique_hand_ManoN(i, jugador, manoN, dfTrayectoria, mano_actual, semilla):
+    """
+    Genera las manos para los jugadores faltantes respetando las restricciones del DataFrame de trayectoria.
+    Args:
+        tablero (int): Número del tablero
+        jugador (str): Identificador del jugador (N, E, S, W)
+        manoN (list): Lista de cartas del jugador
+        dfTrayectoria (DataFrame): DataFrame con la información de trayectoria de los jugadores
+    """
+    try:
+        # Verificar que la mano del jugador tenga 13 cartas
+        if len(manoN) != 13:
+            raise ValueError(f"La mano del jugador {jugador} debe tener 13 cartas, tiene {len(manoN)}")
+
+        # Verificar que no haya cartas duplicadas en la mano del jugador
+        if len(set(manoN)) != len(manoN):
+            raise ValueError(f"Hay cartas duplicadas en la mano del jugador {jugador}")
+
+        # Verificar la estructura del DataFrame
+        columna_jugador = 'Jugador'
+        if columna_jugador not in dfTrayectoria.columns:
+            raise ValueError(f"No se encontró la columna '{columna_jugador}' en el DataFrame")
+            
+        # Obtener los últimos 4 registros del DataFrame
+        ultimos_registros = dfTrayectoria.tail(4)
+        
+        # Crear la baraja completa y eliminar las cartas del jugador que se recibe
+        todas_las_cartas = [rank + suit for rank in RANKS for suit in SUITS]
+        #Se eliminan las 13 cartas ya asignadas a jugador, quedando 39 cartas disponibles para los otros 3 jugadores
+        cartas_disponibles = list(set(todas_las_cartas) - set(manoN))
+
+        # Verificar que tenemos suficientes cartas disponibles
+        if len(cartas_disponibles) < 39:  # 13 cartas * 3 jugadores
+            raise ValueError(f"No hay suficientes cartas disponibles: {len(cartas_disponibles)}")
+        
+        # 💡 Semilla clara y reproducible
+        random.seed(semilla)
+        random.shuffle(cartas_disponibles)
+
+        # Inicializar el diccionario de manos
+        hands = {
+            'N': [],
+            'E': [],
+            'S': [],
+            'W': []
+        }
+     #Crea un diccionario que contendrá las manos de cada jugador. Le asigna al jugador actual su mano conocida
+        # Asignar la mano fija al jugador correspondiente
+        hands[jugador] = manoN
+
+        # Asignar cartas a los otros jugadores usando el solver
+        jugadores_restantes = [p for p in ['N', 'E', 'S', 'W'] if p != jugador]
+        #Llama a una función externa llamada solver_reparto_cartas() para que reparta las cartas restantes a los otros jugadores, respetando las restricciones del dfTrayectoria
+        if mano_actual >= 2:
+            # No usar manoN para excluir cartas aquí, porque se usarán las del CSV dentro del solver
+            manos_solver = solver_reparto_cartas(
+                i, mano_actual, manoN, jugador, jugadores_restantes, dfTrayectoria
+            )
+        else:
+            # Excluir cartas del jugador fijo
+            cartas_usadas = set(manoN)
+            cartas_disponibles = [c for c in todas_las_cartas if c not in cartas_usadas]
+
+            if len(cartas_disponibles) != 39:
+                raise ValueError(f"Se esperaban 39 cartas disponibles pero se encontraron {len(cartas_disponibles)}")
+
+            # Barajar de forma reproducible
+            random.seed(semilla + 100)  # semilla distinta para cartas_disponibles
+            random.shuffle(cartas_disponibles)
+
+            manos_solver = solver_reparto_cartas(
+                i, mano_actual, manoN, jugador, jugadores_restantes, dfTrayectoria,
+                cartas_disponibles=cartas_disponibles
+            )
+
+            for p in jugadores_restantes:
+                hands[p] = manos_solver[p]
+
+            # Verificar duplicados entre jugadores
+            all_cards = []
+            for hand in hands.values():
+                all_cards.extend(hand)
+            if len(set(all_cards)) != len(all_cards):
+                raise ValueError("Hay cartas duplicadas entre diferentes jugadores")
+
+        if manos_solver is None:
+            manos_solver = solver_reparto_cartas_holgura(i, mano_actual, manoN, jugador, jugadores_restantes, dfTrayectoria)
+        for p in jugadores_restantes:
+            hands[p] = manos_solver[p]
+
+        # Verificar que todas las manos sean válidas
+        for player, hand in hands.items():
+            if not is_valid_hand(hand):
+                raise ValueError(f"La mano del jugador {player} no es válida")
+
+        # Verificar que no haya cartas duplicadas entre jugadores
+        all_cards = []
+        for hand in hands.values():
+            all_cards.extend(hand)
+        if len(set(all_cards)) != len(all_cards):
+            raise ValueError("Hay cartas duplicadas entre diferentes jugadores")
+
+        return hands_to_pbn(hands)
+        
+    except Exception as e:
+        print(f"Error en generate_unique_hand_ManoN para tablero {mano_actual}: {str(e)}")
+        print(f"Mano del jugador {jugador}: {manoN}")
+        raise
+
+
+
+def calculate_hcp(hand):
+    hcp = 0
+    for card in hand:
+        rank = card[0]
+        if rank == 'A':
+            hcp += 4
+        elif rank == 'K':
+            hcp += 3
+        elif rank == 'Q':
+            hcp += 2
+        elif rank == 'J':
+            hcp += 1
+    return hcp
+
+
+def convert_pbn_to_holdings(pbn_hands):
+    """
+    Convierte las manos en formato PBN a holdings.
+    """
+    holdings = []  # Lista para almacenar los tableros en formato de valores enteros
+
+    for board_index, board in enumerate(pbn_hands):
+        try:
+            board_str = board.decode('utf-8') if isinstance(board, bytes) else board  # Decodificar si es necesario
+            parts = board_str.strip().split(" ")  # Separar dirección y manos
+
+            if len(parts) != 4:  # Debe haber 4 manos (N, E, S, W)
+                print(f"Error en tablero {board_index + 1}: Número incorrecto de manos ({len(parts)})")
+                continue
+
+            hands = parts[0].split(":")[1:] + parts[1:]  # Obtener las manos sin la dirección
+            board_holdings = []  # Lista para almacenar las manos en formato de valores enteros
+
+            for player_index, hand in enumerate(hands):  # Iterar sobre los 4 jugadores
+                suit_cards = hand.split('.')
+                if len(suit_cards) != 4:  # Debe haber 4 palos
+                    print(f"Error en tablero {board_index + 1}, jugador {player_index}: Número incorrecto de palos ({len(suit_cards)})")
+                    continue
+
+                player_hand = []
+                total_cards = 0
+                for suit_index, suit in enumerate(suit_cards):  # Iterar sobre los 4 palos
+                    # Verificar cartas duplicadas en el palo
+                    if len(set(suit)) != len(suit):
+                        print(f"Error en tablero {board_index + 1}, jugador {player_index}, palo {suit_index}: Cartas duplicadas")
+                        continue
+
+                    # Verificar que las cartas sean válidas
+                    for card in suit:
+                        if card not in RANKS:
+                            print(f"Error en tablero {board_index + 1}, jugador {player_index}, palo {suit_index}: Carta inválida '{card}'")
+                            continue
+
+                    hex_value = sum(RANKSHX.get(card, 0) for card in suit) if suit else 0
+                    player_hand.append(hex_value)
+                    total_cards += len(suit)
+
+                if total_cards != 13:  # Cada mano debe tener 13 cartas
+                    print(f"Error en tablero {board_index + 1}, jugador {player_index}: Número incorrecto de cartas ({total_cards})")
+                    continue
+
+                board_holdings.append(player_hand)
+
+            if len(board_holdings) == 4:  # Solo agregar si tenemos las 4 manos completas
+                holdings.append(board_holdings)
+            else:
+                print(f"Error en tablero {board_index + 1}: No se pudo procesar correctamente")
+
+        except Exception as e:
+            print(f"Error procesando tablero {board_index + 1}: {str(e)}")
+            continue
+
+    if not holdings:
+        raise ValueError("No se pudo generar ninguna mano válida")
+
+    return holdings
+
+def generate_valid_hand_condicion(cartas_fijas, jugador_fijo, jugadores, dfTrayectoria=None):
+    """
+    Genera manos aleatorias para los otros 3 jugadores, sin repetir cartas,
+    y ajusta para cumplir restricciones de HCP si existen en dfTrayectoria.
+    """
+    # 1. Todas las cartas posibles
+    RANKS = "23456789TJQKA"
+    SUITS = ['S', 'H', 'D', 'C']
+    todas_las_cartas = [r + s for s in SUITS for r in RANKS]
+
+    # 2. Cartas disponibles (las que no tiene el jugador fijo)
+    cartas_disponibles = list(set(todas_las_cartas) - set(cartas_fijas))
+    cartas_disponibles.sort()  # Para reproducibilidad
+
+    # 3. Enumerar las cartas (como columna H)
+    enumeracion = list(range(1, 40))  # 1 a 39
+
+    # 4. Crear asignación aleatoria de cartas a jugadores (1, 2, 3)
+    asignacion = [1]*13 + [2]*13 + [3]*13
+    random.shuffle(asignacion)
+
+    # 5. Asignar cartas a cada jugador
+    manos = {jugador_fijo: cartas_fijas}
+    idx_jugador = 0
+    for idx, jugador in enumerate(jugadores):
+        manos[jugador] = []
+        for i in range(39):
+            if asignacion[i] == idx+1:
+                manos[jugador].append(cartas_disponibles[i])
+
+    # 6. Ajustar por HCP si hay restricciones en dfTrayectoria
+    if dfTrayectoria is not None:
+        columna_jugador = 'Jugador'
+        for jugador in jugadores:
+            # Buscar restricciones para el jugador
+            jugador_registros = dfTrayectoria[dfTrayectoria[columna_jugador] == jugador]
+            if not jugador_registros.empty:
+                ultimo_registro = jugador_registros.iloc[-1]
+                min_hcp = int(ultimo_registro.get('Min_HCP', 0))
+                max_hcp = int(ultimo_registro.get('Max_HCP', 40))
+                # Calcular HCP actual
+                hcp_actual = calculate_hcp(*separar_cartas_por_palo(manos[jugador]))
+                # Si no cumple, intentar ajustar (simple: reshuffle hasta cumplir, máx 1000 intentos)
+                intentos = 0
+                while not (min_hcp <= hcp_actual <= max_hcp) and intentos < 1000:
+                    random.shuffle(cartas_disponibles)
+                    # Repartir de nuevo
+                    idx = 0
+                    for idx2, jug in enumerate(jugadores):
+                        manos[jug] = []
+                        for i in range(39):
+                            if asignacion[i] == idx2+1:
+                                manos[jug].append(cartas_disponibles[i])
+                    hcp_actual = calculate_hcp(*separar_cartas_por_palo(manos[jugador]))
+                    intentos += 1
+                # Si no se logra, se deja la última mano generada
+    return manos
+
+
+
+# Función auxiliar para separar cartas por palo (S, H, D, C)
+def separar_cartas_por_palo(mano):
+    S = ''.join([c[0] for c in mano if c[1] == 'S'])
+    H = ''.join([c[0] for c in mano if c[1] == 'H'])
+    D = ''.join([c[0] for c in mano if c[1] == 'D'])
+    C = ''.join([c[0] for c in mano if c[1] == 'C'])
+    return S, H, D, C
+
+#calcular los puntos de honor (HCP - High Card Points)
+def calculate_hcp_py(mano):
+    #Define un diccionario con el valor en puntos de cada carta de honor
+    valor_honor = {'A': 4, 'K': 3, 'Q': 2, 'J': 1}
+    #Recorre la mano, Para cada carta c, extrae c[0], que es la letra del rango y Busca el valor en valor_honor usando .get(c[0], 0)
+    #suma todos los valores
+    return sum(valor_honor.get(c[0], 0) for c in mano)
+
+
+def validar_archivo_manos(nombre_archivo):
+    """
+    Valida cada fila del archivo CSV asegurando que cada jugador tenga 13 cartas bien formadas.
+    """
+    df = pd.read_csv(nombre_archivo)
+    errores = []
+
+    for idx, row in df.iterrows():
+        try:
+            reconstruir_mano(row)
+        except ValueError as e:
+            errores.append(f"Fila {idx + 2}: {e}")  # +2 por el header y base 0
+
+    if errores:
+        raise ValueError("Errores encontrados en el archivo:\n" + "\n".join(errores))
+
+def reconstruir_mano(row):
+    """
+    Reconstruye la mano de un jugador a partir de una fila del DataFrame,
+    uniendo los palos y validando que haya 13 cartas.
+    """
+    mano = []
+
+    for palo, nombre_palo in zip(['Ss', 'Hs', 'Ds', 'Cs'], ['S', 'H', 'D', 'C']):
+        cartas = row.get(palo) # Obtenemos el string de cartas en ese palo, por ejemplo "AKQ"
+        if pd.isna(cartas):# Si la celda está vacía o NaN (p. ej. el jugador no tiene cartas en ese palo)
+            cartas = ''   # La tratamos como cadena vacía para evitar errores
+        # Convertimos el string a mayúsculas, eliminamos espacios en blanco, y reemplazamos "10" por "T"
+        cartas = str(cartas).strip().upper().replace('10', 'T')
+         # Por cada carácter en la cadena (representando cada carta), si es una figura o número válido:
+        # lo combinamos con el palo actual (nombre_palo) y lo agregamos a la lista mano.
+        mano.extend([c + nombre_palo for c in cartas if c in 'AKQJT98765432'])
+    # Verificamos que la mano reconstruida tenga exactamente 13 cartas (lo esperado en bridge)
+    if len(mano) != 13:
+        raise ValueError(f"El jugador {row['Jugador']} no tiene 13 cartas en el archivo: {mano}")
+
+    return mano
+
+def validar_sin_duplicados(manos):
+    all_cards = []
+    for hand in manos.values():
+        all_cards.extend(hand)
+    if len(set(all_cards)) != len(all_cards):
+        raise ValueError("Hay cartas duplicadas entre diferentes jugadores")
+
+
+# -------------------------------------------------------------
+# 🔹 NUEVO MÉTODO: guardar HCP total y por palos
+# -------------------------------------------------------------
+def guardar_hcp_jugadores(tablero, manos, dfTrayectoria):
+    """
+    Guarda los valores de HCP mínimo, máximo y real por jugador,
+    incluyendo valores de HCP mínimo y máximo por cada palo (S, H, D, C).
+    Los resultados se acumulan en un único archivo CSV general.
+    """
+    registros = []
+    palos = ['S', 'H', 'D', 'C']
+
+    for jugador, mano in manos.items():
+        df_j = dfTrayectoria[dfTrayectoria['Jugador'] == jugador]
+        restr = df_j.iloc[-1] if not df_j.empty else {}
+
+        # HCP total del jugador
+        min_hcp_total = restr.get('Min_HCP', None)
+        max_hcp_total = restr.get('Max_HCP', None)
+        hcp_total = calculate_hcp_py(mano)
+
+        # HCP real por palo
+        hcp_palos_reales = {p: calculate_hcp_py([c for c in mano if c.endswith(p)]) for p in palos}
+
+        registro = {
+            'Tablero': tablero + 1,
+            'Jugador': jugador,
+            'Min_HCP': min_hcp_total,
+            'Max_HCP': max_hcp_total,
+            'HCP_Total': hcp_total,
+        }
+
+        # Incorporar restricciones y HCP por cada palo
+        for p in palos:
+            registro[f'Min_{p}'] = restr.get(f'Min_{p}', None)
+            registro[f'Max_{p}'] = restr.get(f'Max_{p}', None)
+            registro[f'HCP_{p}'] = hcp_palos_reales[p]
+
+        registros.append(registro)
+
+    # Crear DataFrame con los resultados del tablero actual
+    df_hcp = pd.DataFrame(registros)
+
+    # Nombre del archivo acumulado
+    nombre_archivo = "HCP_jugadores_total.csv"
+
+    # Verificar si ya existe el archivo para controlar encabezado
+    archivo_existe = os.path.exists(nombre_archivo)
+
+    # Guardar acumulando (append)
+    df_hcp.to_csv(
+        nombre_archivo,
+        mode='a',  # Append
+        header=not archivo_existe,  # Escribir encabezado solo si el archivo no existe
+        index=False,
+        encoding='utf-8-sig'
+    )
+
+    print(f"✅ Datos de HCP guardados/acumulados en {nombre_archivo} (Tablero {tablero + 1})")
+
+
+def Calcular_HCP_JugadorFijo(tablero, manos, jugador_fijo):
+        # 🔹 Guardar información detallada de HCP (total y por palos) se adiciona para guardar el HCP de jugador_fijo
+        # Nombre del archivo resumen
+        nombre_archivo_resumen = "Resumen_HCP_Tablero.csv"
+
+        # 🔹 Verificar si existe el archivo y si hay registros del tablero actual
+        archivo_existe = os.path.exists(nombre_archivo_resumen)
+        if archivo_existe:
+            try:
+                df_existente = pd.read_csv(nombre_archivo_resumen, sep=',', encoding='utf-8-sig')
+                # Si hay registros del tablero actual, eliminar solo esos para evitar duplicados
+                if not df_existente.empty and 'Tablero' in df_existente.columns:
+                    df_existente = df_existente[df_existente['Tablero'] != tablero]
+                    # Si quedaron registros, guardarlos; si no, el archivo se recreará
+                    if not df_existente.empty:
+                        df_existente.to_csv(nombre_archivo_resumen, index=False, encoding='utf-8-sig')
+                    else:
+                        # Si no quedan registros, eliminar el archivo para recrearlo limpio
+                        os.remove(nombre_archivo_resumen)
+                        archivo_existe = False
+            except Exception:
+                # Si hay error leyendo, eliminar y empezar de nuevo
+                if os.path.exists(nombre_archivo_resumen):
+                    os.remove(nombre_archivo_resumen)
+                archivo_existe = False
+
+
+        # 🔹 Obtener la mano del jugador fijo una sola vez
+        mano_jugador = manos
+
+        # 🔹 Calcular HCP total y por palo (solo una pasada sobre la mano)
+        hcp_total = calculate_hcp_py(mano_jugador)
+        hcp_por_palo = {p: 0 for p in SUITS}
+
+        for carta in mano_jugador:
+            for p in SUITS:
+                if carta.endswith(p):
+                    hcp_por_palo[p] += calculate_hcp_py([carta])
+                    break  # evita comprobar los otros palos
+
+        # Determinar máximos y mínimos (solo de ese jugador)
+        max_hcp_total = min_hcp_total = hcp_total
+        max_hcp_por_palo = min_hcp_por_palo = hcp_por_palo
+
+        # Crear registro resumen
+        resumen = {
+            'Tablero': tablero,
+            'Jugador': jugador_fijo,
+            'Max_HCP_Total': max_hcp_total,
+            'Min_HCP_Total': min_hcp_total
+        }
+        for p in SUITS:
+            resumen[f'Max_HCP_{p}'] = max_hcp_por_palo[p]
+            resumen[f'Min_HCP_{p}'] = min_hcp_por_palo[p]
+
+        # Guardar en CSV acumulativo
+        df_resumen = pd.DataFrame([resumen])
+        archivo_existe = os.path.exists(nombre_archivo_resumen)
+        df_resumen.to_csv(
+            nombre_archivo_resumen,
+            mode='a',
+            header=not archivo_existe,
+            index=False,
+            encoding='utf-8-sig'
+        )
+        return df_resumen
+    
+def solver_reparto_cartas_ant(i, mano_actual, cartas_fijas, jugador_fijo, jugadores, dfTrayectoria=None, cartas_disponibles=None, aplicar_restricciones_ilp=True):
+    RANKS = "23456789TJQKA"
+    SUITS = ['S', 'H', 'D', 'C']
+    todas_las_cartas = [r + s for s in SUITS for r in RANKS]
+    jugadores_a_resolver = [j for j in jugadores if j != jugador_fijo]
+
+    manos = {}
+    cartas_usadas = set()
+
+    # La variable 'aplicar_restricciones' se usa para el modo de lectura de CSV (mano_actual >= 2)
+    # y para la lógica de guardado de HCP, pero NO para las restricciones del ILP si aplicamos el nuevo flag.
+    aplicar_restricciones = mano_actual >= 2
+    
+    if mano_actual == 2:
+        # Leer archivo de manos fijas
+        nombre_archivo = f"df_manosCalcular_{jugador_fijo}.csv"
+        if not os.path.exists(nombre_archivo):
+            raise FileNotFoundError(f"No se encontró el archivo: {nombre_archivo}")
+
+        validar_archivo_manos(nombre_archivo)
+        df_manos = pd.read_csv(nombre_archivo)
+        fila_tablero = df_manos[df_manos['Tablero'] == i + 1]
+        if fila_tablero.empty or len(fila_tablero) < 4:
+            raise ValueError(f"No se encontraron 4 filas para el tablero {i + 1} en el archivo {nombre_archivo}")
+
+        # Leer todas las manos del CSV
+        manos_archivo = {}
+        for _, row in fila_tablero.iterrows():
+            jugador_archivo = str(row['Jugador']).strip().upper()
+            mano = reconstruir_mano(row)
+            if len(mano) != 13:
+                raise ValueError(f"El jugador {jugador_archivo} no tiene 13 cartas.")
+            if set(mano) & cartas_usadas:
+                raise ValueError(f"Cartas duplicadas para jugador {jugador_archivo}: {set(mano) & cartas_usadas}")
+            manos_archivo[jugador_archivo] = mano
+            cartas_usadas.update(mano)
+
+        # Validar que las cartas fijas coincidan
+        if set(manos_archivo[jugador_fijo]) != set(cartas_fijas):
+            raise ValueError(f"Las cartas del jugador fijo {jugador_fijo} no coinciden con las del archivo.")
+
+        # Extraer cartas base de los demás jugadores
+        cartas_disponibles = []
+        for j in jugadores:
+            if j != jugador_fijo:
+                cartas_disponibles.extend(manos_archivo[j])
+
+        # Excluir cartas del jugador fijo de las disponibles
+        cartas_disponibles = [c for c in cartas_disponibles if c not in cartas_fijas]
+
+        if len(cartas_disponibles) != 39:
+            raise ValueError(f"Se esperaban 39 cartas disponibles, pero hay {len(cartas_disponibles)}")
+
+        # Asignar la mano del jugador fijo
+        manos[jugador_fijo] = cartas_fijas
+        cartas_usadas = set(cartas_fijas)
+
+    else:
+        # Generación aleatoria de manos
+        manos[jugador_fijo] = cartas_fijas
+        cartas_usadas.update(cartas_fijas)
+
+        if cartas_disponibles is None:
+            todas_disponibles = list(set(todas_las_cartas) - cartas_usadas)
+            if len(todas_disponibles) < len(jugadores_a_resolver) * 13:
+                raise ValueError("No hay suficientes cartas disponibles.")
+            random.seed(i + 1000)
+            random.shuffle(todas_disponibles)
+            cartas_disponibles = todas_disponibles[:len(jugadores_a_resolver) * 13]
+
+    # Validación: las cartas disponibles no deben tener duplicados con cartas ya usadas
+    conflicto = set(cartas_disponibles) & cartas_usadas
+    if conflicto:
+        raise ValueError(f"cartas_disponibles tiene conflicto con cartas usadas: {conflicto}")
+
+    num_cartas = len(cartas_disponibles)
+    num_jugadores = len(jugadores_a_resolver)
+
+    if num_cartas != num_jugadores * 13:
+        raise ValueError("Cantidad incorrecta de cartas disponibles.")
+    # ---------- Solver de asignación (Pulp) ----------
+    prob = pulp.LpProblem("RepartoCartas", pulp.LpMinimize)
+    x = pulp.LpVariable.dicts("x", ((i, j) for i in range(num_cartas) for j in range(num_jugadores)), cat='Binary')
+
+    # Restricciones básicas (siempre se aplican: 1 carta va a 1 jugador, 1 jugador recibe 13 cartas)
+    for i in range(num_cartas):
+        prob += pulp.lpSum(x[(i, j)] for j in range(num_jugadores)) == 1
+    for j in range(num_jugadores):
+        prob += pulp.lpSum(x[(i, j)] for i in range(num_cartas)) == 13
+
+    hcp_carta = [calculate_hcp_py([c]) for c in cartas_disponibles]
+    palo_carta = [c[1] for c in cartas_disponibles]
+
+    # AJUSTE CLAVE: Aplicar restricciones de HCP/Palos SOLO si el nuevo flag es True
+    if aplicar_restricciones_ilp and dfTrayectoria is not None:
+        for idx, jugador in enumerate(jugadores_a_resolver):
+            df_j = dfTrayectoria[dfTrayectoria['Jugador'] == jugador]
+            if df_j.empty:
+                continue # Esto previene errores si la trayectoria está vacía
+            restr = df_j.iloc[-1]
+            
+            # Restricciones estrictas de HCP (mínimo y máximo)
+            min_hcp = int(restr.get('Min_HCP', 0))
+            max_hcp = int(restr.get('Max_HCP', 40))
+            
+            hcp_expr = pulp.lpSum(hcp_carta[i] * x[(i, idx)] for i in range(num_cartas))
+            
+            prob += hcp_expr >= min_hcp 
+            prob += hcp_expr <= max_hcp 
+            
+            # Restricciones por palo
+            for palo in SUITS:
+                min_p = int(restr.get(f'Min_{palo}', 0))
+                max_p = int(restr.get(f'Max_{palo}', 13))
+                idx_cartas_palo = [i for i in range(num_cartas) if palo_carta[i] == palo]
+                palo_expr = pulp.lpSum(x[(i, idx)] for i in idx_cartas_palo)
+                
+                prob += palo_expr >= min_p
+                prob += palo_expr <= max_p
+
+    # Función objetivo: minimizar la suma de todas las variables
+    prob += 0 
+    solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=5)
+    prob.solve(solver)
+
+    if pulp.LpStatus[prob.status] != 'Optimal':
+        # Si no es Optimal, devuelve None
+        return None 
+
+    for idx, jugador in enumerate(jugadores_a_resolver):
+        mano_j = [cartas_disponibles[i] for i in range(num_cartas) if pulp.value(x[(i, idx)]) == 1]
+        if set(mano_j) & cartas_usadas:
+            raise ValueError(f"Cartas duplicadas para jugador {jugador}")
+        manos[jugador] = mano_j
+        cartas_usadas.update(mano_j)
+
+    total_cartas = sum(len(m) for m in manos.values())
+    todas_cartas_asignadas = [c for m in manos.values() for c in m]
+    if total_cartas != 52 or len(set(todas_cartas_asignadas)) != 52:
+        raise ValueError("Las cartas no suman 52 o hay duplicadas.")
+    
+    return manos
+
+
+# Simulación de función calculate_hcp_py (debes usar la tuya real)
+def calculate_hcp_py(cartas):
+    hcp = 0
+    valores = {'A': 4, 'K': 3, 'Q': 2, 'J': 1}
+    for carta in cartas:
+        r = carta[0]
+        hcp += valores.get(r, 0)
+    return hcp
+
+def insertar_mano_declarante_en_df(df_manos, i, jugador_fijo, cartas_fijas, jugadores, mano_actual):
+    """
+    Crea la fila con la mano fija del declarante, almacena la secuencia de cartas
+    en las columnas Ss, Hs, Ds, Cs, y la añade al DataFrame.
+    """
+    
+    # 1. Separar las cartas por palo y extraer solo el rango (ej. 'Q' de 'QS')
+    manos_por_palo = {'S': [], 'H': [], 'D': [], 'C': []}
+    
+    for card in cartas_fijas:
+        # La carta tiene formato 'CR' (Carta-Palo), ej: 'QS'
+        rank = card[0]
+        suit = card[-1]
+        manos_por_palo[suit].append(rank)
+    
+    # Concatenar las cartas de cada palo en una cadena (ej: ['Q', 'T', '4'] -> "QT4")
+    cartas_palo_str = {suit: "".join(ranks) for suit, ranks in manos_por_palo.items()}
+    conteo = {suit: len(ranks) for suit, ranks in manos_por_palo.items()}
+    
+    # Calcular HCP
+    hcp_total = calculate_hcp_py(cartas_fijas)
+    
+    # 2. Crear un diccionario para la nueva fila
+    nueva_fila_data = {
+        'Tablilla': mano_actual,
+        'Tablero': i + 1,
+        'Declarante': jugador_fijo,
+        'Jugador': jugador_fijo,
+        'Ss': cartas_palo_str['S'],  # Cartas de Picas (ej: "QT4")
+        'Hs': cartas_palo_str['H'],  # Cartas de Corazones (ej: "954")
+        'Ds': cartas_palo_str['D'],  # Cartas de Diamantes (ej: "JTD93")
+        'Cs': cartas_palo_str['C'],  # Cartas de Tréboles (ej: "Q3")
+        'NT_Bazas': 0,
+        'Ss_Bazas': 0,
+        'Hs_Bazas': 0,
+        'Ds_Bazas': 0,
+        'Cs_Bazas': 0,
+        'ConteoS': conteo['S'],
+        'ConteoH': conteo['H'],
+        'ConteoD': conteo['D'],
+        'ConteoC': conteo['C'],
+        'HCP_Total': hcp_total
+    }
+    
+       
+    nueva_fila_df = pd.DataFrame([nueva_fila_data])
+    
+    # 3. Asegurar la estructura de columnas y concatenar
+    columnas_base = ['Tablilla', 'Tablero', 'Declarante', 'Jugador', 'Ss', 'Hs', 'Ds', 'Cs', 'NT_Bazas', 'Ss_Bazas', 'Hs_Bazas', 'Ds_Bazas', 'Cs_Bazas', 'ConteoS', 'ConteoH', 'ConteoD', 'ConteoC', 'HCP_Total']
+    todas_columnas = columnas_base
+    
+    # Asegurar que el df actual tenga todas las columnas antes de concatenar
+    for col in todas_columnas:
+        if col not in df_manos.columns:
+            # Usar tipo 'object' para las columnas de cartas y str
+            dtype = object if col.startswith('C') or col in ['Ss', 'Hs', 'Ds', 'Cs'] else None
+            df_manos[col] = df_manos[col].astype(dtype) if df_manos.empty else df_manos[col] 
+
+    # 4. Concatenar y devolver con el orden de columnas correcto
+    df_manos = pd.concat([df_manos, nueva_fila_df], ignore_index=True)
+    return df_manos[todas_columnas]
+
+def solver_reparto_cartas(i, mano_actual, cartas_fijas, jugador_fijo, jugadores, dfTrayectoria=None, cartas_disponibles=None):
+    RANKS = "23456789TJQKA"
+    SUITS = ['S', 'H', 'D', 'C']
+    todas_las_cartas = [r + s for s in SUITS for r in RANKS]
+    jugadores_a_resolver = [j for j in jugadores if j != jugador_fijo]
+
+    manos = {}
+    cartas_usadas = set()
+
+
+    aplicar_restricciones = mano_actual >= 2
+
+    # Se asigna la mano al jugador fijo y se preparan las cartas restantes para ser distribuidas.
+    # La generación siempre es aleatoria; las restricciones se aplican más adelante en el solver si es necesario.
+    manos[jugador_fijo] = cartas_fijas
+    cartas_usadas.update(cartas_fijas)
+
+    if cartas_disponibles is None:
+        todas_disponibles = list(set(todas_las_cartas) - cartas_usadas)
+        if len(todas_disponibles) < len(jugadores_a_resolver) * 13:
+            raise ValueError("No hay suficientes cartas disponibles.")
+        random.seed(i + 1000)
+        random.shuffle(todas_disponibles)
+        cartas_disponibles = todas_disponibles[:len(jugadores_a_resolver) * 13]
+
+
+    # Validación: las cartas disponibles no deben tener duplicados con cartas ya usadas
+    conflicto = set(cartas_disponibles) & cartas_usadas
+    if conflicto:
+        raise ValueError(f"cartas_disponibles tiene conflicto con cartas usadas: {conflicto}")
+
+    num_cartas = len(cartas_disponibles)
+    num_jugadores = len(jugadores_a_resolver)
+
+    if num_cartas != num_jugadores * 13:
+        raise ValueError("Cantidad incorrecta de cartas disponibles.")
+
+    # ---------- Solver de asignación ----------
+    prob = pulp.LpProblem("RepartoCartas", pulp.LpMinimize)
+    x = pulp.LpVariable.dicts("x", ((i, j) for i in range(num_cartas) for j in range(num_jugadores)), cat='Binary')
+
+    for i in range(num_cartas):
+        prob += pulp.lpSum(x[(i, j)] for j in range(num_jugadores)) == 1
+    for j in range(num_jugadores):
+        prob += pulp.lpSum(x[(i, j)] for i in range(num_cartas)) == 13
+
+    hcp_carta = [calculate_hcp_py([c]) for c in cartas_disponibles]
+    palo_carta = [c[1] for c in cartas_disponibles]
+
+    if aplicar_restricciones and dfTrayectoria is not None:
+        for idx, jugador in enumerate(jugadores_a_resolver):
+            df_j = dfTrayectoria[dfTrayectoria['Jugador'] == jugador]
+            if df_j.empty:
+                continue
+            restr = df_j.iloc[-1]
+            
+            # Restricciones estrictas de HCP (mínimo y máximo)
+            min_hcp = int(restr.get('Min_HCP', 0))
+            max_hcp = int(restr.get('Max_HCP', 40))
+            
+            hcp_expr = pulp.lpSum(hcp_carta[i] * x[(i, idx)] for i in range(num_cartas))
+            
+            # Aplicar restricciones estrictas de HCP
+            prob += hcp_expr >= min_hcp  # HCP mínimo
+            prob += hcp_expr <= max_hcp  # HCP máximo
+            
+            # Restricciones por palo
+            for palo in SUITS:
+                min_p = int(restr.get(f'Min_{palo}', 0))
+                max_p = int(restr.get(f'Max_{palo}', 13))
+                idx_cartas_palo = [i for i in range(num_cartas) if palo_carta[i] == palo]
+                palo_expr = pulp.lpSum(x[(i, idx)] for i in idx_cartas_palo)
+                
+                # Aplicar restricciones estrictas por palo
+                prob += palo_expr >= min_p  # Mínimo de cartas por palo
+                prob += palo_expr <= max_p  # Máximo de cartas por palo
+
+    # Función objetivo: minimizar la suma de todas las variables (sin restricciones de distancia)
+    prob += 0  # Función objetivo constante ya que solo queremos satisfacer las restricciones
+    solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=5)
+    prob.solve(solver)
+
+    if pulp.LpStatus[prob.status] != 'Optimal':
+        return None
+
+    for idx, jugador in enumerate(jugadores_a_resolver):
+        mano_j = [cartas_disponibles[i] for i in range(num_cartas) if pulp.value(x[(i, idx)]) == 1]
+        if set(mano_j) & cartas_usadas:
+            raise ValueError(f"Cartas duplicadas para jugador {jugador}")
+        manos[jugador] = mano_j
+        cartas_usadas.update(mano_j)
+
+    total_cartas = sum(len(m) for m in manos.values())
+    todas_cartas_asignadas = [c for m in manos.values() for c in m]
+    if total_cartas != 52 or len(set(todas_cartas_asignadas)) != 52:
+        raise ValueError("Las cartas no suman 52 o hay duplicadas.")
+
+    return manos
+
+
+
+# Simulación de función calculate_hcp_py (Reemplaza con tu función real)
+def calculate_hcp_py(cartas):
+    """Calcula los High Card Points (HCP) de una lista de cartas."""
+    hcp = 0
+    valores = {'A': 4, 'K': 3, 'Q': 2, 'J': 1}
+    for carta in cartas:
+        if len(carta) == 2:
+            r = carta[0]
+            hcp += valores.get(r, 0)
+    return hcp
+
+def solver_reparto_cartas_holgura(i, mano_actual, cartas_fijas, jugador_fijo, jugadores, dfTrayectoria=None, cartas_disponibles=None):
+    RANKS = "23456789TJQKA"
+    SUITS = ['S', 'H', 'D', 'C']
+    todas_las_cartas = [r + s for s in SUITS for r in RANKS]
+    jugadores_a_resolver = [j for j in jugadores if j != jugador_fijo]
+
+    manos = {}
+    cartas_usadas = set()
+
+
+    aplicar_restricciones = mano_actual >= 2
+
+    # Se asigna la mano al jugador fijo y se preparan las cartas restantes para ser distribuidas.
+    # La generación siempre es aleatoria; las restricciones se aplican más adelante en el solver si es necesario.
+    manos[jugador_fijo] = cartas_fijas
+    cartas_usadas.update(cartas_fijas)
+
+    if cartas_disponibles is None:
+        todas_disponibles = list(set(todas_las_cartas) - cartas_usadas)
+        if len(todas_disponibles) < len(jugadores_a_resolver) * 13:
+            raise ValueError("No hay suficientes cartas disponibles.")
+        random.seed(i + 1000)
+        random.shuffle(todas_disponibles)
+        cartas_disponibles = todas_disponibles[:len(jugadores_a_resolver) * 13]
+
+
+    # Validación: las cartas disponibles no deben tener duplicados con cartas ya usadas
+    conflicto = set(cartas_disponibles) & cartas_usadas
+    if conflicto:
+        raise ValueError(f"cartas_disponibles tiene conflicto con cartas usadas: {conflicto}")
+
+    num_cartas = len(cartas_disponibles)
+    num_jugadores = len(jugadores_a_resolver)
+
+    if num_cartas != num_jugadores * 13:
+        raise ValueError("Cantidad incorrecta de cartas disponibles.")
+
+    # ---------- Solver de asignación con holgura----------
+    prob = pulp.LpProblem("RepartoCartas", pulp.LpMinimize)
+    x = pulp.LpVariable.dicts("x", ((i, j) for i in range(num_cartas) for j in range(num_jugadores)), cat='Binary')
+
+    holguras = []
+
+    for i in range(num_cartas):
+        prob += pulp.lpSum(x[(i, j)] for j in range(num_jugadores)) == 1
+    for j in range(num_jugadores):
+        prob += pulp.lpSum(x[(i, j)] for i in range(num_cartas)) == 13
+
+    hcp_carta = [calculate_hcp_py([c]) for c in cartas_disponibles]
+    palo_carta = [c[1] for c in cartas_disponibles]
+
+    if aplicar_restricciones and dfTrayectoria is not None:
+        for idx, jugador in enumerate(jugadores_a_resolver):
+            df_j = dfTrayectoria[dfTrayectoria['Jugador'] == jugador]
+            df_j = dfTrayectoria[dfTrayectoria['Jugador'] == jugador]
+            if df_j.empty: continue
+            restr = df_j.iloc[-1]
+            
+            # --- Restricciones de HCP con Holgura ---
+            min_hcp, max_hcp = int(restr.get('Min_HCP', 0)), int(restr.get('Max_HCP', 40))
+            hcp_expr = pulp.lpSum(hcp_carta[i] * x[(i, idx)] for i in range(num_cartas))
+            
+            s_hcp_neg = pulp.LpVariable(f"s_hcp_neg_{idx}", lowBound=0)
+            s_hcp_pos = pulp.LpVariable(f"s_hcp_pos_{idx}", lowBound=0)
+            holguras.extend([s_hcp_neg, s_hcp_pos])
+            
+            prob += hcp_expr + s_hcp_neg >= min_hcp
+            prob += hcp_expr - s_hcp_pos <= max_hcp
+            
+            # Restricciones por palo
+            for palo in SUITS:
+                min_p, max_p = int(restr.get(f'Min_{palo}', 0)), int(restr.get(f'Max_{palo}', 13))
+                idx_cartas_palo = [i for i in range(num_cartas) if palo_carta[i] == palo]
+                palo_expr = pulp.lpSum(x[(i, idx)] for i in idx_cartas_palo)
+                
+                s_palo_neg = pulp.LpVariable(f"s_{palo.lower()}_neg_{idx}", lowBound=0)
+                s_palo_pos = pulp.LpVariable(f"s_{palo.lower()}_pos_{idx}", lowBound=0)
+                holguras.extend([s_palo_neg, s_palo_pos])
+                
+                prob += palo_expr + s_palo_neg >= min_p
+                prob += palo_expr - s_palo_pos <= max_p
+
+    # Función objetivo: minimizar la suma de todas las variables (sin restricciones de distancia)
+    prob += 0  # Función objetivo constante ya que solo queremos satisfacer las restricciones
+    solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=5)
+    prob.solve(solver)
+
+    if pulp.LpStatus[prob.status] != 'Optimal':
+        return None
+
+    for idx, jugador in enumerate(jugadores_a_resolver):
+        mano_j = [cartas_disponibles[i] for i in range(num_cartas) if pulp.value(x[(i, idx)]) == 1]
+        if set(mano_j) & cartas_usadas:
+            raise ValueError(f"Cartas duplicadas para jugador {jugador}")
+        manos[jugador] = mano_j
+        cartas_usadas.update(mano_j)
+
+    total_cartas = sum(len(m) for m in manos.values())
+    todas_cartas_asignadas = [c for m in manos.values() for c in m]
+    if total_cartas != 52 or len(set(todas_cartas_asignadas)) != 52:
+        raise ValueError("Las cartas no suman 52 o hay duplicadas.")
+
+    return manos
+
+
+
+
+def guardarHcpJugadorFijo(board, manos, jugador_fijo):
+        # 🔹 Guardar información detallada de HCP (total y por palos) se adiciona para guardar el HCP de jugador_fijo
+        nombre_archivo_resumen = "Resumen_HCP_Tablero.csv"
+
+        # 🔹 Si ES EL PRIMER TABLERO (i == 0), borrar archivo previo
+        nombre_archivo_resumen = "Resumen_HCP_Tablero.csv"
+
+        # 🔹 Si el archivo existe, BORRARLO SIEMPRE (solo su contenido)
+        if os.path.exists(nombre_archivo_resumen):
+            os.remove(nombre_archivo_resumen)
+
+        # Después de borrar, archivo_existe = False
+        archivo_existe = False
+
+        # Obtener mano del jugador fijo
+        mano_jugador = manos
+
+        # Calcular HCP total y por palo
+        hcp_total = calculate_hcp_py(mano_jugador)
+        hcp_por_palo = {p: 0 for p in SUITS}
+
+        for carta in mano_jugador:
+            palo = carta[1]
+            hcp_por_palo[palo] += calculate_hcp_py([carta])
+
+        # Como es una sola mano fija, min = max
+        max_hcp_total = hcp_total
+        min_hcp_total = hcp_total
+
+        max_hcp_por_palo = {p: hcp_por_palo[p] for p in SUITS}
+        min_hcp_por_palo = {p: hcp_por_palo[p] for p in SUITS}
+
+        # Crear registro resumen
+        resumen = {
+            'Tablero': board,
+            'Jugador': jugador_fijo,
+            'Max_HCP_Total': max_hcp_total,
+            'Min_HCP_Total': min_hcp_total
+        }
+
+        for p in SUITS:
+            resumen[f'Max_HCP_{p}'] = max_hcp_por_palo[p]
+            resumen[f'Min_HCP_{p}'] = min_hcp_por_palo[p]
+
+        # Guardar en CSV
+        df_resumen = pd.DataFrame([resumen])
+        df_resumen.to_csv(
+            nombre_archivo_resumen,
+            mode='a',
+            header=not archivo_existe,
+            index=False,
+            encoding='utf-8-sig'
+        )

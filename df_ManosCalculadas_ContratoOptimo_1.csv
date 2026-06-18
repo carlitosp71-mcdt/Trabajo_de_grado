@@ -1,0 +1,92 @@
+#! /usr/bin/python
+
+"""Copyright 2014-2015 Foppe HEMMINGA
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License."""
+import os
+from ctypes import *
+
+# Obtener la ruta absoluta del directorio donde está el script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construir la ruta relativa a la DLL
+dll_path = os.path.join(script_dir, "dds.dll")
+
+# Cargar la biblioteca DDS
+try:
+    dds = cdll.LoadLibrary(dll_path)
+    print(f"Librería DDS cargada correctamente: {dds}")
+except OSError as e:
+    print(f"Error al cargar DDS DLL: {e}")
+    exit(1)
+
+
+DDS_HANDS = 4
+DDS_SUITS = 4
+DDS_STRAINS = 5
+
+MAXNOOFBOARDS = 200
+
+RETURN_NO_FAULT = 1
+
+
+class ddTableDeal(Structure):
+    _fields_ = [("cards", c_uint * DDS_HANDS * DDS_SUITS)]
+
+class ddTableDeals(Structure):
+    _fields_ = [("noOfTables", c_int),
+                ("deals", ddTableDeal * (MAXNOOFBOARDS >> 2))]
+
+
+class ddTableResults(Structure):
+#    _fields_ = [("resTable", c_int * DDS_STRAINS * DDS_HANDS)]
+    _fields_ = [("resTable", c_int * DDS_HANDS * DDS_STRAINS)]
+
+class ddTablesRes(Structure):
+    _fields_ = [("noOfBoards", c_int),
+                ("results", ddTableResults * (MAXNOOFBOARDS >> 2))]
+
+class parResults(Structure):
+    """     index = 0 is NS view and index = 1 
+     is EW view. By 'view' is here meant 
+     which side that starts the bidding."""
+    _fields_ = [("parScore", ((c_char * 16) * 2)),
+                ("parContractsString", ((c_char * 128) * 2))]
+
+class allParResults(Structure):
+    _fields_ = [("presults", parResults * MAXNOOFBOARDS)]
+
+class parResultsDealer(Structure):
+    _fields_ = [("number", c_int),
+                ("score", c_int),
+                ("contracts", c_char * 10 * 10)]
+
+
+SetMaxThreads = dds.SetMaxThreads
+"""int userThreads"""
+
+FreeMemory = dds.FreeMemory
+FreeMemory.argtypes = None
+FreeMemory.restype = None
+
+
+CalcAllTables = dds.CalcAllTables
+"""pointer to struct dd TableDeals * dealsp
+int mode
+int trumpFilter[DDS_STRAINS]
+poiter to struct ddTablesRes * resp
+pointer to struct allParResults'* presp"""
+CalcAllTables.argtypes = [POINTER(ddTableDeals), c_int, c_int * DDS_STRAINS, \
+    POINTER(ddTablesRes), POINTER(allParResults)]
+CalcAllTables.restype = c_int
+
